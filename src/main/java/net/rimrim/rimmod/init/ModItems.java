@@ -1,4 +1,4 @@
-package net.rimrim.rimmod.registry;
+package net.rimrim.rimmod.init;
 
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
@@ -39,6 +39,7 @@ public class ModItems {
     public static final DeferredItem<BlockItem> EXAMPLE_ORE = ITEMS.registerSimpleBlockItem("example_ore", ModBlocks.EXAMPLE_ORE);
     public static final DeferredItem<BlockItem> DEEPSLATE_EXAMPLE_ORE = ITEMS.registerSimpleBlockItem("deepslate_example_ore", ModBlocks.DEEPSLATE_EXAMPLE_ORE);
     public static final DeferredItem<BlockItem> INSERTER = ITEMS.registerSimpleBlockItem("inserter", ModBlocks.INSERTER);
+    public static final DeferredItem<BlockItem> COPY_CHEST = ITEMS.registerSimpleBlockItem("copy_chest", ModBlocks.COPY_CHEST);
 
 
 

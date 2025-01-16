@@ -1,7 +1,6 @@
 package net.rimrim.rimmod;
 
-import net.rimrim.rimmod.datagen.DataGenerators;
-import net.rimrim.rimmod.registry.ModRegistry;
+import net.rimrim.rimmod.init.ModRegistry;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;

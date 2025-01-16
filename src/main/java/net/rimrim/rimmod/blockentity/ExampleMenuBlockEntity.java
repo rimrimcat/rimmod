@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.rimrim.rimmod.RimMod;
 import net.rimrim.rimmod.menu.ExampleMenu;
-import net.rimrim.rimmod.registry.ModBlockEntities;
+import net.rimrim.rimmod.init.ModBlockEntities;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

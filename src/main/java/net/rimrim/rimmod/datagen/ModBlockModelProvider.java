@@ -10,14 +10,12 @@ import net.minecraft.client.data.models.blockstates.VariantProperties;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.data.models.model.TexturedModel;
-import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.rimrim.rimmod.RimMod;
-import net.rimrim.rimmod.block.InserterBlock;
-import net.rimrim.rimmod.registry.ModBlocks;
-import net.rimrim.rimmod.registry.ModItems;
+import net.rimrim.rimmod.init.ModBlocks;
+import net.rimrim.rimmod.init.ModItems;
 
 public class ModBlockModelProvider extends ModelProvider {
     public ModBlockModelProvider(PackOutput output) {

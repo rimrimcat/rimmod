@@ -1,10 +1,11 @@
-package net.rimrim.rimmod.registry;
+package net.rimrim.rimmod.init;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.rimrim.rimmod.RimMod;
+import net.rimrim.rimmod.blockentity.CopyChestBlockEntity;
 import net.rimrim.rimmod.blockentity.ExampleMenuBlockEntity;
 import net.rimrim.rimmod.blockentity.InserterBlockEntity;
 import net.rimrim.rimmod.blockentity.TankBlockEntity;
@@ -41,6 +42,14 @@ public class ModBlockEntities {
             () -> new BlockEntityType<>(
                     InserterBlockEntity::new,
                     ModBlocks.INSERTER.get()
+            )
+    );
+
+    public static final Supplier<BlockEntityType<CopyChestBlockEntity>> COPY_CHEST = BLOCK_ENTITY_TYPES.register(
+            "copy_chest",
+            () -> new BlockEntityType<>(
+                    CopyChestBlockEntity::new,
+                    ModBlocks.COPY_CHEST.get()
             )
     );
 

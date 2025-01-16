@@ -9,8 +9,8 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.rimrim.rimmod.blockentity.TankBlockEntity;
-import net.rimrim.rimmod.registry.ModBlocks;
-import net.rimrim.rimmod.registry.ModMenus;
+import net.rimrim.rimmod.init.ModBlocks;
+import net.rimrim.rimmod.init.ModMenus;
 
 public class TankMenu extends AbstractContainerMenu {
     private final TankBlockEntity blockEntity;

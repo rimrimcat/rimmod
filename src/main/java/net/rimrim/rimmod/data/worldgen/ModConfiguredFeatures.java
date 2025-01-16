@@ -12,7 +12,7 @@ import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguratio
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
 import net.minecraft.world.level.levelgen.structure.templatesystem.TagMatchTest;
 import net.rimrim.rimmod.RimMod;
-import net.rimrim.rimmod.registry.ModBlocks;
+import net.rimrim.rimmod.init.ModBlocks;
 
 import java.util.List;
 

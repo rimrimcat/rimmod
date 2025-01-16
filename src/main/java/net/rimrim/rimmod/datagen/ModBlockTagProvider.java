@@ -5,8 +5,8 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.rimrim.rimmod.RimMod;
-import net.rimrim.rimmod.registry.ModBlocks;
-import net.rimrim.rimmod.registry.ModTags;
+import net.rimrim.rimmod.init.ModBlocks;
+import net.rimrim.rimmod.init.ModTags;
 
 import java.util.concurrent.CompletableFuture;
 

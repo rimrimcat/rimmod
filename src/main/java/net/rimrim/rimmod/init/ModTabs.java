@@ -1,4 +1,4 @@
-package net.rimrim.rimmod.registry;
+package net.rimrim.rimmod.init;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -25,9 +25,11 @@ public class ModTabs {
                         output.accept(ModItems.EXAMPLE_ORE.get());
                         output.accept(ModItems.DEEPSLATE_EXAMPLE_ORE.get());
                         output.accept(ModItems.INSERTER.get());
+                        output.accept(ModItems.COPY_CHEST.get());   
 
                     }
             ).build());
+
 
     public static void register(IEventBus eventBus) {
         CREATIVE_MODE_TABS.register(eventBus);

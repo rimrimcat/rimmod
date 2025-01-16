@@ -203,12 +203,12 @@
 			"translation": [0, 7, 2]
 		},
 		"ground": {
-			"rotation": [90, 180, 0],
-			"translation": [0, -1.25, 7.25]
+			"rotation": [0, -180, 0],
+			"translation": [0, 4.75, 7.25]
 		},
 		"gui": {
-			"rotation": [0, -90, 0],
-			"translation": [-1.25, 3.25, 0]
+			"rotation": [0, -132, 0],
+			"translation": [-0.25, 3.25, 0]
 		},
 		"head": {
 			"translation": [0, 14, 0]

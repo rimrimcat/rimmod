@@ -14,8 +14,8 @@ import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.functions.ApplyBonusCount;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
-import net.rimrim.rimmod.registry.ModBlocks;
-import net.rimrim.rimmod.registry.ModItems;
+import net.rimrim.rimmod.init.ModBlocks;
+import net.rimrim.rimmod.init.ModItems;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;

@@ -1,4 +1,4 @@
-package net.rimrim.rimmod.registry;
+package net.rimrim.rimmod.init;
 
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -9,11 +9,15 @@ import net.rimrim.rimmod.RimMod;
 @EventBusSubscriber(modid = RimMod.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class ModRegistry {
     public static void register(IEventBus eventBus) {
+        ModDataComponents.register(eventBus);
+
         ModItems.register(eventBus);
         ModBlocks.register(eventBus);
-        ModTabs.register(eventBus);
         ModBlockEntities.register(eventBus);
+
         ModMenus.register(eventBus);
+
+        ModTabs.register(eventBus);
     }
 
     @SubscribeEvent

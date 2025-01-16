@@ -15,7 +15,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.rimrim.rimmod.blockentity.ExampleMenuBlockEntity;
-import net.rimrim.rimmod.registry.ModBlockEntities;
+import net.rimrim.rimmod.init.ModBlockEntities;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

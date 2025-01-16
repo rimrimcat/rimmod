@@ -1,4 +1,4 @@
-package net.rimrim.rimmod.registry;
+package net.rimrim.rimmod.init;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.flag.FeatureFlags;
@@ -7,6 +7,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.rimrim.rimmod.RimMod;
 import net.rimrim.rimmod.menu.ExampleMenu;
+import net.rimrim.rimmod.menu.InserterMenu;
 import net.rimrim.rimmod.menu.TankMenu;
 
 import java.util.function.Supplier;
@@ -24,6 +25,12 @@ public class ModMenus {
             "example_menu",
             () -> new MenuType<>(ExampleMenu::new, FeatureFlags.DEFAULT_FLAGS)
     );
+
+    public static final Supplier<MenuType<InserterMenu>> INSERTER_MENU = MENU_TYPES.register(
+            "inserter_menu",
+            () -> new MenuType<>(InserterMenu::new, FeatureFlags.DEFAULT_FLAGS)
+    );
+
 
     public static void register(IEventBus eventBus) {
         MENU_TYPES.register(eventBus);

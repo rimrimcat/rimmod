@@ -4,8 +4,8 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.world.level.block.Block;
-import net.rimrim.rimmod.registry.ModItems;
-import net.rimrim.rimmod.registry.ModTags;
+import net.rimrim.rimmod.init.ModItems;
+import net.rimrim.rimmod.init.ModTags;
 
 import java.util.concurrent.CompletableFuture;
 

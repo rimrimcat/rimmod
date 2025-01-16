@@ -1,13 +1,11 @@
-package net.rimrim.rimmod.registry;
+package net.rimrim.rimmod.init;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -93,6 +91,11 @@ public class ModBlocks {
 
     public static final DeferredBlock<InserterBlock> INSERTER = BLOCKS.register("inserter",
             registryName -> new InserterBlock(BlockBehaviour.Properties.of()
+                    .setId(ResourceKey.create(Registries.BLOCK, registryName))
+            ));
+
+ public static final DeferredBlock<CopyChestBlock> COPY_CHEST = BLOCKS.register("copy_chest",
+            registryName -> new CopyChestBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CHEST)
                     .setId(ResourceKey.create(Registries.BLOCK, registryName))
             ));
 
