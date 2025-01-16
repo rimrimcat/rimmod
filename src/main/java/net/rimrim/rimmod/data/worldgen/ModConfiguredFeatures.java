@@ -29,7 +29,7 @@ public class ModConfiguredFeatures {
 
         );
 
-        register(context, EXAMPLE_ORE, Feature.ORE, new OreConfiguration(example_ore, 4));
+        register(context, EXAMPLE_ORE, Feature.ORE, new OreConfiguration(example_ore, 9));
 
 
 

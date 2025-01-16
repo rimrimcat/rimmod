@@ -19,15 +19,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.rimrim.rimmod.menu.TankMenu;
 import net.rimrim.rimmod.registry.ModBlockEntities;
 
-public class TankBlockEntity extends BaseContainerBlockEntity {
+public class InserterBlockEntity extends BaseContainerBlockEntity {
     // The container size. This can of course be any value you want.
     public static final int SIZE = 1;
     private NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
 
     private int value;
 
-    public TankBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.TANK.get(), pos, state);
+    public InserterBlockEntity(BlockPos pos, BlockState state) {
+        super(ModBlockEntities.INSERTER.get(), pos, state);
 
     }
 
@@ -37,6 +37,7 @@ public class TankBlockEntity extends BaseContainerBlockEntity {
     public int getContainerSize() {
         return SIZE;
     }
+
     // The getter for our item stack list.
     @Override
     protected NonNullList<ItemStack> getItems() {
@@ -114,7 +115,8 @@ public class TankBlockEntity extends BaseContainerBlockEntity {
 
     @Override
     protected AbstractContainerMenu createMenu(int id, Inventory player) {
-        return new TankMenu(id, player);
+        //return new TankMenu(id, player);
+        return null;
     }
 
     public static <T extends BlockEntity> void tick(Level level, BlockPos blockPos, BlockState blockState, T t) {

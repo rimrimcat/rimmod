@@ -20,13 +20,28 @@ public class ModItems {
                             .saturationModifier(2f)
                             .build()));
 
-    public static final DeferredItem<BlockItem> EXAMPLE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("example_block", ModBlocks.EXAMPLE_BLOCK);
+    public static final DeferredItem<Item> EXAMPLE_RAW = ITEMS.registerSimpleItem("example_raw");
+
+    //    public static final DeferredItem<BlockItem> EXAMPLE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("example_block", ModBlocks.EXAMPLE_BLOCK);
+    public static final DeferredItem<BlockItem> EXAMPLE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("example_block",
+            ModBlocks.EXAMPLE_BLOCK,
+            new Item.Properties().food(
+                    new FoodProperties.Builder()
+                            .alwaysEdible()
+                            .nutrition(9)
+                            .saturationModifier(18f)
+                            .build())
+    );
+
+
     public static final DeferredItem<BlockItem> TANK = ITEMS.registerSimpleBlockItem("tank", ModBlocks.TANK);
     public static final DeferredItem<BlockItem> EXAMPLE_MENU = ITEMS.registerSimpleBlockItem("example_menu", ModBlocks.EXAMPLE_MENU);
     public static final DeferredItem<BlockItem> EXAMPLE_ORE = ITEMS.registerSimpleBlockItem("example_ore", ModBlocks.EXAMPLE_ORE);
     public static final DeferredItem<BlockItem> DEEPSLATE_EXAMPLE_ORE = ITEMS.registerSimpleBlockItem("deepslate_example_ore", ModBlocks.DEEPSLATE_EXAMPLE_ORE);
+    public static final DeferredItem<BlockItem> INSERTER = ITEMS.registerSimpleBlockItem("inserter", ModBlocks.INSERTER);
 
-    public static final DeferredItem<Item> EXAMPLE_RAW = ITEMS.registerSimpleItem("example_raw");
+
+
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

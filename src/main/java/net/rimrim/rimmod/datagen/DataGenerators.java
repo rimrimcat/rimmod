@@ -10,6 +10,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.rimrim.rimmod.RimMod;
+import net.rimrim.rimmod.data.ModDatapackProvider;
 
 import java.util.Collections;
 import java.util.List;
@@ -33,15 +34,17 @@ public class DataGenerators {
         // RECIPES
         generator.addProvider(true, new ModRecipeProvider.Runner(packOutput, lookupProvider));
 
-        // FUELS
+        // FUELS AND WORLDGEN
         generator.addProvider(true, new ModDataMapProvider(packOutput, lookupProvider));
+        generator.addProvider(true, new ModDatapackProvider(packOutput, lookupProvider));
 
         // TAGS
         BlockTagsProvider blockTagsProvider = new ModBlockTagProvider(packOutput, lookupProvider);
         generator.addProvider(true, blockTagsProvider);
         generator.addProvider(true, new ModItemTagProvider(packOutput, lookupProvider, blockTagsProvider.contentsGetter()));
 
-        // no item model/block state provider, must be in client
+        // FUELS AND WORLDGEN
+        generator.addProvider(true, new ModDataMapProvider(packOutput, lookupProvider));
 
     }
 
@@ -60,8 +63,9 @@ public class DataGenerators {
         // RECIPES
         generator.addProvider(true, new ModRecipeProvider.Runner(packOutput, lookupProvider));
 
-        // FUELS
+        // FUELS AND WORLDGEN
         generator.addProvider(true, new ModDataMapProvider(packOutput, lookupProvider));
+        generator.addProvider(true, new ModDatapackProvider(packOutput, lookupProvider));
 
         // TAGS
         BlockTagsProvider blockTagsProvider = new ModBlockTagProvider(packOutput, lookupProvider);

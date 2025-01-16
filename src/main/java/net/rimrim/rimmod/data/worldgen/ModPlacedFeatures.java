@@ -24,7 +24,8 @@ public class ModPlacedFeatures {
 
         Holder<ConfiguredFeature<?, ?>> holder = configuredFeatures.getOrThrow(ModConfiguredFeatures.EXAMPLE_ORE);
 
-        register(context, EXAMPLE_ORE, holder, ModOreGen.commonOrePlacements(3, HeightRangePlacement.uniform(VerticalAnchor.absolute(-64), VerticalAnchor.absolute(20))));
+        register(context, EXAMPLE_ORE, holder, ModOreGen.commonOrePlacements(12, HeightRangePlacement.uniform(VerticalAnchor.absolute(-64), VerticalAnchor.absolute(80))));
+        // 12 vein in a chunk roughly
     }
 
     private static ResourceKey<PlacedFeature> createKey(String name) {

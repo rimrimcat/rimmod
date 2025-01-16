@@ -6,6 +6,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.rimrim.rimmod.RimMod;
 import net.rimrim.rimmod.blockentity.ExampleMenuBlockEntity;
+import net.rimrim.rimmod.blockentity.InserterBlockEntity;
 import net.rimrim.rimmod.blockentity.TankBlockEntity;
 
 import java.util.function.Supplier;
@@ -15,7 +16,7 @@ public class ModBlockEntities {
             DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, RimMod.MODID);
 
 
-    public static final Supplier<BlockEntityType<TankBlockEntity>> TANK_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+    public static final Supplier<BlockEntityType<TankBlockEntity>> TANK = BLOCK_ENTITY_TYPES.register(
             "tank_block_entity",
             // The block entity type.
             () -> new BlockEntityType<>(
@@ -32,6 +33,14 @@ public class ModBlockEntities {
             () -> new BlockEntityType<>(
                     ExampleMenuBlockEntity::new,
                     ModBlocks.EXAMPLE_MENU.get()
+            )
+    );
+
+    public static final Supplier<BlockEntityType<InserterBlockEntity>> INSERTER = BLOCK_ENTITY_TYPES.register(
+            "inserter",
+            () -> new BlockEntityType<>(
+                    InserterBlockEntity::new,
+                    ModBlocks.INSERTER.get()
             )
     );
 
