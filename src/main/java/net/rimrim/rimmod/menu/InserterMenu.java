@@ -1,32 +1,108 @@
 package net.rimrim.rimmod.menu;
 
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.neoforge.items.SlotItemHandler;
+import net.rimrim.rimmod.blockentity.InserterBlockEntity;
 import net.rimrim.rimmod.init.ModMenus;
 
 public class InserterMenu extends AbstractContainerMenu {
-    public InserterMenu(int containerId, Inventory playerInventory) {
+    private final InserterBlockEntity blockEntity;
+    private final ContainerLevelAccess levelAccess;
+
+    private final int containerRows = 1;
+
+    // Client Constructor
+    public InserterMenu(int containerId, Inventory playerInventory, FriendlyByteBuf buf) {
+        this(containerId, playerInventory, playerInventory.player.level().getBlockEntity(buf.readBlockPos()));
+    }
+
+   // Server Constructor
+    public InserterMenu(int containerId, Inventory playerInventory, BlockEntity blockEntity) {
         super(ModMenus.INSERTER_MENU.get(), containerId);
+
+        if (blockEntity instanceof InserterBlockEntity be) {
+            this.blockEntity = be;
+        }
+        else {
+            throw new IllegalStateException("Incorrect entity class %s passed into Menu".formatted(blockEntity.getClass().getName()) );
+        }
+
+        this.levelAccess = ContainerLevelAccess.create(blockEntity.getLevel(), blockEntity.getBlockPos());
+
+
+        addInserterGrid();
+        int i = 18;
+        int j = 3 * 18 + this.containerRows * 18 + 13;
+        this.addStandardInventorySlots(playerInventory, 8, j);
     }
 
 
-    @Override
-    public ItemStack quickMoveStack(Player player, int quickMovedSlotIndex) {
-        // The quick moved slot stack
-        ItemStack quickMovedStack = ItemStack.EMPTY;
-        // The quick moved slot
-        Slot quickMovedSlot = this.slots.get(quickMovedSlotIndex);
+//
+//    public InserterMenu(MenuType<?> type, int containerId, Inventory playerInventory, Container container, int rows) {
+//        super(type, containerId);
+//        checkContainerSize(container, 1);
+//        this.container = container;
+//        this.containerRows = 1;
+//        container.startOpen(playerInventory.player);
+//        int i = 18;
+//        this.addInserterGrid(container);
+//        int j = 3 * 18 + this.containerRows * 18 + 13;
+//        this.addStandardInventorySlots(playerInventory, 8, j);
+//    }
+//
+//
+//    private InserterMenu(MenuType<?> type, int containerId, Inventory playerInventory, int size) {
+//        this.handler = new SlotItemHandler()
+//        this(type, containerId, playerInventory, new ItemStackHandler(size), 1);
+//    }
 
-
-        return ItemStack.EMPTY; // TODO:
+    private void addInserterGrid() {
+        this.addSlot(new SlotItemHandler(this.blockEntity.getItemHandler(), 0, 80, 35));
     }
-
 
     @Override
     public boolean stillValid(Player player) {
-        return true;
+        return stillValid(levelAccess, player, blockEntity.getBlockState().getBlock());
     }
+
+    public InserterBlockEntity getBlockEntity() {
+        return this.blockEntity;
+    }
+
+
+    @Override
+    public ItemStack quickMoveStack(Player player, int index) {
+        ItemStack itemstack = ItemStack.EMPTY;
+        Slot slot = this.slots.get(index);
+        if (slot != null && slot.hasItem()) {
+            ItemStack itemstack1 = slot.getItem();
+            itemstack = itemstack1.copy();
+            if (index < this.containerRows * 9) {
+                if (!this.moveItemStackTo(itemstack1, this.containerRows * 9, this.slots.size(), true)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (!this.moveItemStackTo(itemstack1, 0, this.containerRows * 9, false)) {
+                return ItemStack.EMPTY;
+            }
+
+            if (itemstack1.isEmpty()) {
+                slot.setByPlayer(ItemStack.EMPTY);
+            } else {
+                slot.setChanged();
+            }
+        }
+
+        return itemstack;
+    }
+
+
+
+
 }
+
+

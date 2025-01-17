@@ -4,6 +4,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.rimrim.rimmod.RimMod;
 import net.rimrim.rimmod.menu.ExampleMenu;
@@ -27,8 +28,8 @@ public class ModMenus {
     );
 
     public static final Supplier<MenuType<InserterMenu>> INSERTER_MENU = MENU_TYPES.register(
-            "inserter_menu",
-            () -> new MenuType<>(InserterMenu::new, FeatureFlags.DEFAULT_FLAGS)
+            "inserter",
+            () -> IMenuTypeExtension.create(InserterMenu::new)
     );
 
 

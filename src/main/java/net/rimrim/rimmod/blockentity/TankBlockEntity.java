@@ -16,8 +16,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.rimrim.rimmod.menu.InserterMenu;
 import net.rimrim.rimmod.init.ModBlockEntities;
+import net.rimrim.rimmod.menu.TankMenu;
 
 public class TankBlockEntity extends BaseContainerBlockEntity {
     // The container size. This can of course be any value you want.
@@ -114,7 +114,7 @@ public class TankBlockEntity extends BaseContainerBlockEntity {
 
     @Override
     protected AbstractContainerMenu createMenu(int id, Inventory player) {
-        return new InserterMenu(id, player);
+        return new TankMenu(id, player);
     }
 
     public static <T extends BlockEntity> void tick(Level level, BlockPos blockPos, BlockState blockState, T t) {

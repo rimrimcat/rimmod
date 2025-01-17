@@ -5,10 +5,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.rimrim.rimmod.RimMod;
-import net.rimrim.rimmod.blockentity.CopyChestBlockEntity;
-import net.rimrim.rimmod.blockentity.ExampleMenuBlockEntity;
-import net.rimrim.rimmod.blockentity.InserterBlockEntity;
-import net.rimrim.rimmod.blockentity.TankBlockEntity;
+import net.rimrim.rimmod.blockentity.*;
 
 import java.util.function.Supplier;
 
