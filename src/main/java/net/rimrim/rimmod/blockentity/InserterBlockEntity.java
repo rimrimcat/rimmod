@@ -2,6 +2,7 @@ package net.rimrim.rimmod.blockentity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.Position;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -13,6 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
@@ -21,16 +23,18 @@ import net.rimrim.rimmod.init.ModBlockEntities;
 import net.rimrim.rimmod.menu.InserterMenu;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 
 public class InserterBlockEntity extends BlockEntity implements MenuProvider {
     public static final BlockCapability<IItemHandler, Void> ITEM_HANDLER_NO_CONTEXT =
             BlockCapability.createVoid(
-                    // Provide a name to uniquely identify the capability.
                     ResourceLocation.fromNamespaceAndPath(RimMod.MODID, "item_handler_no_context"),
-                    // Provide the queried type. Here, we want to look up `IItemHandler` instances.
                     IItemHandler.class);
 
     public static final int SIZE = 1;
+
+    public static float transfer_duration = 1f; // ItemStack transferred per second
+    public float transfer_progress = 0f;
 
     private final ItemStackHandler itemHandler = new ItemStackHandler(SIZE) {
         @Override
@@ -137,4 +141,20 @@ public class InserterBlockEntity extends BlockEntity implements MenuProvider {
     public @Nullable AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
         return new InserterMenu(containerId, playerInventory, this);
     }
+
+    public Vector3f getItemOffsetFromCenter() {
+        switch (this.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING)) {
+            case NORTH:
+                return new Vector3f(0f, -0.1875f, -0.5f);
+            case SOUTH:
+                return new Vector3f(0f, -0.1875f, 0.5f);
+            case WEST:
+                return new Vector3f(-0.5f, -0.1875f, 0f);
+            case EAST:
+                return new Vector3f(0.5f, -0.1875f, 0f);
+            default:
+                return new Vector3f(0.0f, 0.0f, 0.0f);
+        }
+    }
+
 }

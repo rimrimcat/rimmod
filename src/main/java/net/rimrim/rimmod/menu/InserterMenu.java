@@ -37,7 +37,7 @@ public class InserterMenu extends AbstractContainerMenu {
 
         addInserterGrid();
         int i = 18;
-        int j = 3 * 18 + this.containerRows * 18 + 13;
+        int j = 3 * 18 + this.containerRows * 18 + 12;
         this.addStandardInventorySlots(playerInventory, 8, j);
     }
 
