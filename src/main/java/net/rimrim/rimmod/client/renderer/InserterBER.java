@@ -18,6 +18,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.block.state.BlockState;
 import net.rimrim.rimmod.RimMod;
 import net.rimrim.rimmod.block.InserterBlock;
 import net.rimrim.rimmod.blockentity.InserterBlockEntity;
@@ -47,8 +48,6 @@ public class InserterBER implements BlockEntityRenderer<InserterBlockEntity> {
         this.arm_1 = root.getChild("arm_1");
         this.arm_2 = root.getChild("arm_2");
     }
-
-
 
     public static LayerDefinition createBodyLayer() {
         MeshDefinition meshdefinition = new MeshDefinition();
@@ -83,24 +82,13 @@ public class InserterBER implements BlockEntityRenderer<InserterBlockEntity> {
         return LayerDefinition.create(meshdefinition, 64, 64);
     }
 
-
     public void renderItem(
+            ItemStack stack,
             InserterBlockEntity blockEntity,
-            float partialTick,
             PoseStack poseStack,
             MultiBufferSource bufferSource,
-            int packedLight,
-            int packedOverlay
+            Level level
     ) {
-        ItemStack stack = blockEntity.getItem(0);
-        if (stack.isEmpty()) return;
-
-//        Minecraft minecraft = Minecraft.getInstance();
-        Level level = blockEntity.getLevel();
-
-        if (level == null) return;
-
-
         BlockPos pos = blockEntity.getBlockPos().above();
         int light_pack = LightTexture.pack(
                 level.getBrightness(LightLayer.BLOCK, pos),
@@ -157,27 +145,25 @@ public class InserterBER implements BlockEntityRenderer<InserterBlockEntity> {
         float yFactor = -1;
         float zFactor = 1;
 
-        // Rotate accoring to blockstate
-        Direction dir = blockEntity.getBlockState().getValue(InserterBlock.FACING);
+        // Rotate according to blockstate
+        InserterBlock.InserterState state = blockEntity.getState();
+        Direction dir = blockEntity.getBlockState().getValue(InserterBlock.INSERT_DIRECTION);
+
+        if (state.direction.getStep() == -1) {
+            dir = dir.getOpposite();
+        }
+
         if (dir == Direction.NORTH) {
             //
         }
         else if (dir == Direction.EAST) {
-//            // What to do with factors
-//            // + X -> - Y
-//            // + Y -> + X
             poseStack.rotateAround(new Quaternionf(0, -0.71, 0, 0.71), 0f, 0.5f, 0f);
         }
         else if (dir == Direction.WEST) {
-//            // What to do with factors
-//            // + X -> + Y
-//            // + Y -> - X
             poseStack.rotateAround(new Quaternionf(0, 0.71, 0, -0.71), 0f, 0.5f, 0f);
         }
         else if (dir == Direction.SOUTH) {
             poseStack.rotateAround(new Quaternionf(0, 1, 0, 0), 0f, 0.5f, 0f);
-            // + X -> - X
-            // + Z -> - Z
         }
 
 

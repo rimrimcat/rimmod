@@ -42,25 +42,6 @@ public class InserterMenu extends AbstractContainerMenu {
     }
 
 
-//
-//    public InserterMenu(MenuType<?> type, int containerId, Inventory playerInventory, Container container, int rows) {
-//        super(type, containerId);
-//        checkContainerSize(container, 1);
-//        this.container = container;
-//        this.containerRows = 1;
-//        container.startOpen(playerInventory.player);
-//        int i = 18;
-//        this.addInserterGrid(container);
-//        int j = 3 * 18 + this.containerRows * 18 + 13;
-//        this.addStandardInventorySlots(playerInventory, 8, j);
-//    }
-//
-//
-//    private InserterMenu(MenuType<?> type, int containerId, Inventory playerInventory, int size) {
-//        this.handler = new SlotItemHandler()
-//        this(type, containerId, playerInventory, new ItemStackHandler(size), 1);
-//    }
-
     private void addInserterGrid() {
         this.addSlot(new SlotItemHandler(this.blockEntity.getItemHandler(), 0, 80, 35));
     }
