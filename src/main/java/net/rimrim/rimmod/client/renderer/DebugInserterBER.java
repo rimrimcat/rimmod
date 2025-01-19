@@ -14,18 +14,25 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.rimrim.rimmod.RimMod;
-import net.rimrim.rimmod.block.InserterBlock;
+import net.rimrim.rimmod.block.DebugInserterBlock;
 import net.rimrim.rimmod.block.properties.InserterState;
-import net.rimrim.rimmod.blockentity.InserterBlockEntity;
+import net.rimrim.rimmod.blockentity.DebugInserterBlockEntity;
+import net.rimrim.rimmod.client.utils.TransformMap;
+import net.rimrim.rimmod.client.utils.TransformValue;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-public class InserterBER implements BlockEntityRenderer<InserterBlockEntity> {
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+public class DebugInserterBER implements BlockEntityRenderer<DebugInserterBlockEntity> {
     private final BlockEntityRendererProvider.Context context;
 
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(
@@ -38,8 +45,22 @@ public class InserterBER implements BlockEntityRenderer<InserterBlockEntity> {
     private final ModelPart arm_1;
     private final ModelPart arm_2;
 
+    public static float gr_tx = 0;
+    public static float gr_ty = 0;
+    public static float gr_tz = 0;
+    public static float gr_qx = 0;
+    public static float gr_qy = -0.2f;
+    public static float gr_qz = 0;
+    public static float gr_qw = 0.98f;
+    public static float gr_px = 0f;
+    public static float gr_py = 5 / 16f;
+    public static float gr_pz = 0f;
 
-    public InserterBER(BlockEntityRendererProvider.Context context) {
+
+    // Map for default values
+    public static final TransformMap tmap = new TransformMap();
+
+    public DebugInserterBER(BlockEntityRendererProvider.Context context) {
         this.context = context;
 
         this.root = context.bakeLayer(LAYER_LOCATION);
@@ -85,7 +106,7 @@ public class InserterBER implements BlockEntityRenderer<InserterBlockEntity> {
 
     public void renderItem(
             ItemStack stack,
-            InserterBlockEntity blockEntity,
+            DebugInserterBlockEntity blockEntity,
             PoseStack poseStack,
             MultiBufferSource bufferSource,
             Level level
@@ -118,7 +139,7 @@ public class InserterBER implements BlockEntityRenderer<InserterBlockEntity> {
     }
 
     @Override
-    public void render(InserterBlockEntity blockEntity,
+    public void render(DebugInserterBlockEntity blockEntity,
                        float partialTick,
                        PoseStack poseStack,
                        MultiBufferSource bufferSource,
@@ -129,9 +150,9 @@ public class InserterBER implements BlockEntityRenderer<InserterBlockEntity> {
         if (level == null) return;
 
         InserterState state = blockEntity.getInserterState();
-        Direction dir = blockEntity.getBlockState().getValue(InserterBlock.INSERT_DIRECTION);
+        Direction dir = blockEntity.getBlockState().getValue(DebugInserterBlock.INSERT_DIRECTION);
         long lastUpdateInterval = level.getGameTime() - blockEntity.getLastUpdateTime();
-        RimMod.LOGGER.info("lastUpdateInterval: " + lastUpdateInterval);
+//        RimMod.LOGGER.info("lastUpdateInterval: " + lastUpdateInterval);
 
 
         if (state.direction.getStep() == -1) {
@@ -144,93 +165,116 @@ public class InserterBER implements BlockEntityRenderer<InserterBlockEntity> {
                 level.getBrightness(LightLayer.SKY, pos)
         );
 
-        switch (blockEntity.getInserterState()) {
-            case TAKING: {
-                // should be around 20 ticks
-                // left grabber transformations
-
-
-            }
-            case TRANSFERRING_1: {
-            }
-            case TRANSFERRING_2: {
-            }
-            case INSERTING: {
-            }
-            case RETURNING_1: {
-            }
-            case RETURNING_2: {
-            }
-        }
-
-
         // Rotate according to blockstate (DO IT AFTER ALL TRANSFORMS)
 
+        render_other(poseStack, bufferSource, dir, light_pack, packedOverlay, lastUpdateInterval);
 
-        render_other(poseStack, bufferSource, dir, light_pack, packedOverlay);
-//        render_grabber(poseStack, bufferSource, dir, light_pack, packedOverlay, lastUpdateInterval);
+        render_grabber_right(poseStack, bufferSource, dir, light_pack, packedOverlay, lastUpdateInterval, state);
+
+        render_grabber_left(poseStack, bufferSource, dir, light_pack, packedOverlay, lastUpdateInterval, state);
+
+        render_arm1(poseStack, bufferSource, dir, light_pack, packedOverlay, lastUpdateInterval, state);
+
+        render_arm2(poseStack, bufferSource, dir, light_pack, packedOverlay, lastUpdateInterval, state);
 
 
     }
 
-
-    public void render_other(PoseStack poseStack, MultiBufferSource bufferSource, Direction dir, int packedLight, int packedOverlay) {
+    private void renderModelPart(
+            PoseStack poseStack,
+            MultiBufferSource bufferSource,
+            Direction dir,
+            int packedLight,
+            int packedOverlay,
+            ModelPart modelPart,
+            Runnable customTransformations
+    ) {
+        // Common setup logic
         poseStack.pushPose();
 
-        // Center
-        poseStack.translate(0.5f, 0.5f, 0.5f);
-        // Rotate upright to NORTH
-        poseStack.rotateAround(new Quaternionf(0, 0, -1, 0), 0f, 0.5f, 0f);
+        poseStack.translate(0.5f, 0.5f, 0.5f); // Generic translation
+        poseStack.rotateAround(new Quaternionf(0, 0, -1, 0), 0f, 0.5f, 0f); // Align to block space
 
-        if (dir == Direction.NORTH) {
-            //
-        } else if (dir == Direction.EAST) {
-            poseStack.rotateAround(new Quaternionf(0, -0.71, 0, 0.71), 0f, 0.5f, 0f);
-        } else if (dir == Direction.WEST) {
-            poseStack.rotateAround(new Quaternionf(0, 0.71, 0, -0.71), 0f, 0.5f, 0f);
-        } else if (dir == Direction.SOUTH) {
-            poseStack.rotateAround(new Quaternionf(0, 1, 0, 0), 0f, 0.5f, 0f);
+        // Apply custom transformations unique to this model part
+        if (customTransformations != null) {
+            customTransformations.run();
         }
 
-
-        base.render(poseStack, bufferSource.getBuffer(RenderType.entityCutout(TEXTURE)), packedLight, packedOverlay);
-        grabber_right.render(poseStack, bufferSource.getBuffer(RenderType.entityCutout(TEXTURE)), packedLight, packedOverlay);
-        grabber_left.render(poseStack, bufferSource.getBuffer(RenderType.entityCutout(TEXTURE)), packedLight, packedOverlay);
-        arm_1.render(poseStack, bufferSource.getBuffer(RenderType.entityCutout(TEXTURE)), packedLight, packedOverlay);
-        arm_2.render(poseStack, bufferSource.getBuffer(RenderType.entityCutout(TEXTURE)), packedLight, packedOverlay);
-
-        poseStack.popPose();
-
-    }
-
-    public void render_grabber(PoseStack poseStack, MultiBufferSource bufferSource, Direction dir, int packedLight, int packedOverlay, long update_interval) {
-        poseStack.pushPose();
-
-        poseStack.translate(0.5f, 0.5f, 0.5f);
-        poseStack.rotateAround(new Quaternionf(0, 0, -1, 0), 0f, 0.5f, 0f);
-
-        // x and y messed up btw
-
-        Quaternionf q1 = new Quaternionf(0, 0, 0, 1);
-//        Quaternionf q2 = new Quaternionf(0, 0, 0, 1);
-
-        Quaternionf q2 = new Quaternionf(0, -0.2, 0, 0.98);
-        Quaternionf q1_q2 = q1.nlerp(q2, (float) update_interval / 20f);
-//        poseStack.rotateAround(q1_q2, 7/16f, 5/16f, 6/16f);
-        poseStack.rotateAround(q1_q2, 0f, 5/16f, 0f);
-
-
-
+        // Direction-based rotations
         if (dir == Direction.EAST) {
-            poseStack.rotateAround(new Quaternionf(0, -0.71, 0, 0.71), 0f, 0.5f, 0f);
+            poseStack.rotateAround(new Quaternionf(0, -0.71f, 0, 0.71f), 0f, 0.5f, 0f);
         } else if (dir == Direction.WEST) {
-            poseStack.rotateAround(new Quaternionf(0, 0.71, 0, -0.71), 0f, 0.5f, 0f);
+            poseStack.rotateAround(new Quaternionf(0, 0.71f, 0, -0.71f), 0f, 0.5f, 0f);
         } else if (dir == Direction.SOUTH) {
-            poseStack.rotateAround(new Quaternionf(0, 1, 0, 0), 0f, 0.5f, 0f);
+            poseStack.rotateAround(new Quaternionf(0, 1f, 0, 0), 0f, 0.5f, 0f);
         }
 
-//        grabber_right.render(poseStack, bufferSource.getBuffer(RenderType.entityCutout(TEXTURE)), packedLight, packedOverlay);
+        // Render the model part
+        modelPart.render(
+                poseStack,
+                bufferSource.getBuffer(RenderType.entityCutout(TEXTURE)),
+                packedLight,
+                packedOverlay
+        );
 
+        // Common teardown logic
         poseStack.popPose();
     }
+
+    public void render_grabber_right(PoseStack poseStack, MultiBufferSource bufferSource, Direction dir, int packedLight, int packedOverlay, long update_interval, InserterState state) {
+        renderModelPart(poseStack, bufferSource, dir, packedLight, packedOverlay, grabber_right, () -> {
+            // x and y messed up btw
+            // Custom transformations specific to grabber_right
+            TransformValue vals = tmap.get(state, "grabber_right");
+
+            Quaternionf q1 = new Quaternionf(0, 0, 0, 1);
+            Quaternionf q2 = new Quaternionf(vals.qx, vals.qy, vals.qz, vals.qw);
+            Quaternionf q1_q2 = q1.nlerp(q2, (float) update_interval / 20f);
+            poseStack.rotateAround(q1_q2, vals.px, vals.py, vals.pz);
+        });
+    }
+
+    public void render_grabber_left(PoseStack poseStack, MultiBufferSource bufferSource, Direction dir, int packedLight, int packedOverlay, long update_interval, InserterState state) {
+        renderModelPart(poseStack, bufferSource, dir, packedLight, packedOverlay, grabber_left, () -> {
+            // x and y messed up btw
+            // Custom transformations specific to grabber_right
+            TransformValue vals = tmap.get(state, "grabber_left");
+
+            Quaternionf q1 = new Quaternionf(0, 0, 0, 1);
+            Quaternionf q2 = new Quaternionf(vals.qx, vals.qy, vals.qz, vals.qw);
+            Quaternionf q1_q2 = q1.nlerp(q2, (float) update_interval / 20f);
+            poseStack.rotateAround(q1_q2, vals.px, vals.py, vals.pz);
+        });
+    }
+
+    public void render_arm1(PoseStack poseStack, MultiBufferSource bufferSource, Direction dir, int packedLight, int packedOverlay, long update_interval, InserterState state) {
+        renderModelPart(poseStack, bufferSource, dir, packedLight, packedOverlay, arm_1, () -> {
+            // x and y messed up btw
+            // Custom transformations specific to grabber_right
+            TransformValue vals = tmap.get(state, "arm_1");
+
+            Quaternionf q1 = new Quaternionf(0, 0, 0, 1);
+            Quaternionf q2 = new Quaternionf(vals.qx, vals.qy, vals.qz, vals.qw);
+            Quaternionf q1_q2 = q1.nlerp(q2, (float) update_interval / 20f);
+            poseStack.rotateAround(q1_q2, vals.px, vals.py, vals.pz);
+        });
+    }
+
+    public void render_arm2(PoseStack poseStack, MultiBufferSource bufferSource, Direction dir, int packedLight, int packedOverlay, long update_interval, InserterState state) {
+        renderModelPart(poseStack, bufferSource, dir, packedLight, packedOverlay, arm_2, () -> {
+            // x and y messed up btw
+            // Custom transformations specific to grabber_right
+            TransformValue vals = tmap.get(state, "arm_2");
+
+            Quaternionf q1 = new Quaternionf(0, 0, 0, 1);
+            Quaternionf q2 = new Quaternionf(vals.qx, vals.qy, vals.qz, vals.qw);
+            Quaternionf q1_q2 = q1.nlerp(q2, (float) update_interval / 20f);
+            poseStack.rotateAround(q1_q2, vals.px, vals.py, vals.pz);
+        });
+    }
+
+    public void render_other(PoseStack poseStack, MultiBufferSource bufferSource, Direction dir, int packedLight, int packedOverlay, long update_interval) {
+        renderModelPart(poseStack, bufferSource, dir, packedLight, packedOverlay, base, null);
+    }
+
 }

@@ -42,6 +42,14 @@ public class ModBlockEntities {
             )
     );
 
+    public static final Supplier<BlockEntityType<DebugInserterBlockEntity>> DEBUG_INSERTER = BLOCK_ENTITY_TYPES.register(
+            "debug_inserter",
+            () -> new BlockEntityType<>(
+                    DebugInserterBlockEntity::new,
+                    ModBlocks.DEBUG_INSERTER.get()
+            )
+    );
+
     public static final Supplier<BlockEntityType<CopyChestBlockEntity>> COPY_CHEST = BLOCK_ENTITY_TYPES.register(
             "copy_chest",
             () -> new BlockEntityType<>(

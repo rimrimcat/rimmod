@@ -8,6 +8,7 @@ import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.rimrim.rimmod.RimMod;
+import net.rimrim.rimmod.client.renderer.DebugInserterBER;
 import net.rimrim.rimmod.client.renderer.InserterBER;
 import net.rimrim.rimmod.client.screen.InserterScreen;
 import net.rimrim.rimmod.init.ModBlockEntities;
@@ -22,6 +23,10 @@ public class ClientHandler {
                 ModBlockEntities.INSERTER.get(),
                 InserterBER::new
         );
+        event.registerBlockEntityRenderer(
+                ModBlockEntities.DEBUG_INSERTER.get(),
+                DebugInserterBER::new
+        );
 
     }
 
@@ -35,6 +40,10 @@ public class ClientHandler {
         event.registerLayerDefinition(
                 InserterBER.LAYER_LOCATION,
                 InserterBER::createBodyLayer);
+
+        event.registerLayerDefinition(
+                DebugInserterBER.LAYER_LOCATION,
+                DebugInserterBER::createBodyLayer);
     }
 
     @SubscribeEvent

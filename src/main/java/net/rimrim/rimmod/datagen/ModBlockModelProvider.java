@@ -74,6 +74,7 @@ public class ModBlockModelProvider extends ModelProvider {
 //                        ));
 //        RimMod.LOGGER.error("DONE GENERATING BLOCKSTATE FOR INSERTER");
         blockModels.createGenericCube(ModBlocks.INSERTER.get());
+        blockModels.createGenericCube(ModBlocks.DEBUG_INSERTER.get());
 
     }
 

@@ -93,6 +93,10 @@ public class ModBlocks {
             registryName -> new InserterBlock(BlockBehaviour.Properties.of()
                     .setId(ResourceKey.create(Registries.BLOCK, registryName))
             ));
+    public static final DeferredBlock<DebugInserterBlock> DEBUG_INSERTER = BLOCKS.register("debug_inserter",
+            registryName -> new DebugInserterBlock(BlockBehaviour.Properties.of()
+                    .setId(ResourceKey.create(Registries.BLOCK, registryName))
+            ));
 
  public static final DeferredBlock<CopyChestBlock> COPY_CHEST = BLOCKS.register("copy_chest",
             registryName -> new CopyChestBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CHEST)

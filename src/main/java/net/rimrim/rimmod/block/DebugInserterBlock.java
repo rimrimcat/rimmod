@@ -1,6 +1,7 @@
 package net.rimrim.rimmod.block;
 
 import com.mojang.serialization.MapCodec;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -25,20 +26,22 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.items.ItemStackHandler;
-import net.rimrim.rimmod.blockentity.InserterBlockEntity;
+import net.rimrim.rimmod.blockentity.DebugInserterBlockEntity;
+import net.rimrim.rimmod.client.screen.DebugInserterControlScreen;
 import net.rimrim.rimmod.init.ModBlockEntities;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
-
-public class InserterBlock extends BaseEntityBlock implements EntityBlock {
-    public static final MapCodec<InserterBlock> CODEC = simpleCodec(InserterBlock::new);
+public class DebugInserterBlock extends BaseEntityBlock implements EntityBlock {
+    public static final MapCodec<DebugInserterBlock> CODEC = simpleCodec(DebugInserterBlock::new);
     public static final EnumProperty<Direction> INSERT_DIRECTION = EnumProperty.create("insert_direction", Direction.class, Direction.Plane.HORIZONTAL);;
+//    public static final EnumProperty<InserterState> STATE = EnumProperty.create("state", InserterState.class);
+//    public static final IntegerProperty PROGRESS = IntegerProperty.create("progress", 0, 1023);
 
     protected static final VoxelShape SHAPE = Block.box(3.0, 0.0, 3.0, 12.0, 2.0, 12.0);
 
-    public InserterBlock(Properties properties) {
+    public DebugInserterBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.defaultBlockState()
                 .setValue(INSERT_DIRECTION, Direction.NORTH)
@@ -46,7 +49,6 @@ public class InserterBlock extends BaseEntityBlock implements EntityBlock {
 //                .setValue(PROGRESS, 0)
         );
     }
-
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
@@ -71,7 +73,7 @@ public class InserterBlock extends BaseEntityBlock implements EntityBlock {
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new InserterBlockEntity(pos, state);
+        return new DebugInserterBlockEntity(pos, state);
     }
 
     @Override
@@ -105,11 +107,17 @@ public class InserterBlock extends BaseEntityBlock implements EntityBlock {
 
     @Override
     protected InteractionResult useWithoutItem(BlockState blockState, Level level, BlockPos pos, Player player, BlockHitResult result) {
-        if (player instanceof ServerPlayer sPlayer && level.getBlockEntity(pos) instanceof InserterBlockEntity inserterBlockEntity) {
-            sPlayer.openMenu((MenuProvider) inserterBlockEntity, pos);
+        if (level.isClientSide && !(player instanceof ServerPlayer)) {
+            // Execute screen rendering on the client thread
+            Minecraft.getInstance().execute(() -> {
+                Minecraft instance = Minecraft.getInstance();
+                if (instance != null) {
+                    instance.setScreen(new DebugInserterControlScreen());
+                }
+            });
+            return InteractionResult.SUCCESS;
         }
-
-        return InteractionResult.SUCCESS;
+        return InteractionResult.FAIL;
     }
 
     @Override
@@ -117,8 +125,8 @@ public class InserterBlock extends BaseEntityBlock implements EntityBlock {
         Containers.dropContentsOnDestroy(state, newState, level, pos);
         if (!level.isClientSide()) {
             BlockEntity be = level.getBlockEntity(pos);
-            if (be instanceof InserterBlockEntity) {
-                ItemStackHandler inventory = ((InserterBlockEntity) be).getItemHandler();
+            if (be instanceof DebugInserterBlockEntity) {
+                ItemStackHandler inventory = ((DebugInserterBlockEntity) be).getItemHandler();
                 for (int i = 0; i < inventory.getSlots(); i++) {
                     ItemStack item = inventory.getStackInSlot(i);
                     ItemEntity itemEntity = new ItemEntity(level, 0.5 + pos.getX(), 0.5 + pos.getY(), 0.5 + pos.getZ(), item);
@@ -137,7 +145,7 @@ public class InserterBlock extends BaseEntityBlock implements EntityBlock {
 
     @Override
     public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return (level.isClientSide() && type == ModBlockEntities.INSERTER.get()) ? null : InserterBlockEntity::tick;
+        return (level.isClientSide() && type == ModBlockEntities.DEBUG_INSERTER.get()) ? null : DebugInserterBlockEntity::tick;
     }
 }
 
