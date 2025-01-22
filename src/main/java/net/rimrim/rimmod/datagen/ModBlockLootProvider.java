@@ -28,8 +28,6 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
 
     @Override
     protected void generate() {
-
-
         add(ModBlocks.EXAMPLE_ORE.get(),
                 createMultipleOreDrops(ModBlocks.EXAMPLE_ORE.get(), ModItems.EXAMPLE_RAW.get(), 2, 5));
         add(ModBlocks.DEEPSLATE_EXAMPLE_ORE.get(),
@@ -37,8 +35,8 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
 
         dropSelf(ModBlocks.EXAMPLE_BLOCK.get());
         dropSelf(ModBlocks.TANK.get());
-        dropSelf(ModBlocks.EXAMPLE_MENU.get());
         dropSelf(ModBlocks.INSERTER.get());
+        dropSelf(ModBlocks.DEBUG_INSERTER.get());
     }
 
     protected LootTable.Builder createMultipleOreDrops(Block pBlock, Item item, float minDrops, float maxDrops) {

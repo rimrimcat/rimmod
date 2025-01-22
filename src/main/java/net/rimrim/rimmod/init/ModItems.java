@@ -39,7 +39,6 @@ public class ModItems {
     public static final DeferredItem<BlockItem> DEEPSLATE_EXAMPLE_ORE = ITEMS.registerSimpleBlockItem("deepslate_example_ore", ModBlocks.DEEPSLATE_EXAMPLE_ORE);
     public static final DeferredItem<BlockItem> INSERTER = ITEMS.registerSimpleBlockItem("inserter", ModBlocks.INSERTER);
     public static final DeferredItem<BlockItem> DEBUG_INSERTER = ITEMS.registerSimpleBlockItem("debug_inserter", ModBlocks.DEBUG_INSERTER);
-    public static final DeferredItem<BlockItem> COPY_CHEST = ITEMS.registerSimpleBlockItem("copy_chest", ModBlocks.COPY_CHEST);
 
 
 

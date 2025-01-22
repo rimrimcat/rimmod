@@ -25,7 +25,6 @@ public class ModTabs {
                         output.accept(ModItems.DEEPSLATE_EXAMPLE_ORE.get());
                         output.accept(ModItems.INSERTER.get());
                         output.accept(ModItems.DEBUG_INSERTER.get());
-                        output.accept(ModItems.COPY_CHEST.get());
 
                     }
             ).build());

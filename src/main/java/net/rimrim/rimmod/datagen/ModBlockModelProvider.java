@@ -10,10 +10,17 @@ import net.minecraft.client.data.models.blockstates.VariantProperties;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.data.models.model.TexturedModel;
+import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.rimrim.rimmod.RimMod;
+import net.rimrim.rimmod.block.DebugInserterBlock;
+import net.rimrim.rimmod.block.InserterBlock;
+import net.rimrim.rimmod.block.properties.InserterState;
 import net.rimrim.rimmod.init.ModBlocks;
 import net.rimrim.rimmod.init.ModItems;
 
@@ -26,12 +33,10 @@ public class ModBlockModelProvider extends ModelProvider {
     protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
         itemModels.generateFlatItem(ModItems.EXAMPLE_ITEM.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.EXAMPLE_RAW.get(), ModelTemplates.FLAT_ITEM);
+
         // Generate files
-
-
         blockModels.createTrivialCube(ModBlocks.EXAMPLE_BLOCK.get());
 
-//        blockModels.createTrivialCube(ModBlocks.TANK.get());
         blockModels.createHorizontallyRotatedBlock(ModBlocks.TANK.get(),
                 TexturedModel.ORIENTABLE_ONLY_TOP.updateTexture(
                         mapping ->
@@ -42,8 +47,6 @@ public class ModBlockModelProvider extends ModelProvider {
                 )
         );
 
-
-        blockModels.createGenericCube(ModBlocks.EXAMPLE_MENU.get());
 
         blockModels.createTrivialCube(ModBlocks.EXAMPLE_ORE_ON.get());
         ResourceLocation example_ore_off = TexturedModel.CUBE.create(ModBlocks.EXAMPLE_ORE.get(), blockModels.modelOutput);
@@ -57,24 +60,43 @@ public class ModBlockModelProvider extends ModelProvider {
                         )
         );
 
-
         blockModels.createTrivialCube(ModBlocks.DEEPSLATE_EXAMPLE_ORE.get());
 
-//        RimMod.LOGGER.error("WILL START GENERATING BLOCKSTATE FOR INSERTER");
-//        ResourceLocation inserter = ResourceLocation.fromNamespaceAndPath(RimMod.MODID, "block/inserter");
-//        blockModels.blockStateOutput.accept(
-//                MultiVariantGenerator.multiVariant(ModBlocks.INSERTER.get(),
-//                                Variant.variant().with(VariantProperties.MODEL, inserter))
-//                        .with(
-//                                PropertyDispatch.property(InserterBlock.FACING)
-//                                .select(Direction.NORTH, Variant.variant().with(VariantProperties.Y_ROT, VariantProperties.Rotation.R0))
-//                                .select(Direction.SOUTH, Variant.variant().with(VariantProperties.Y_ROT, VariantProperties.Rotation.R180))
-//                                .select(Direction.WEST, Variant.variant().with(VariantProperties.Y_ROT, VariantProperties.Rotation.R270))
-//                                .select(Direction.EAST, Variant.variant().with(VariantProperties.Y_ROT, VariantProperties.Rotation.R90))
-//                        ));
-//        RimMod.LOGGER.error("DONE GENERATING BLOCKSTATE FOR INSERTER");
-        blockModels.createGenericCube(ModBlocks.INSERTER.get());
-        blockModels.createGenericCube(ModBlocks.DEBUG_INSERTER.get());
+        horizontallyRotatableBlock(
+                blockModels,
+                ModBlocks.INSERTER.get(),
+                "block/inserter",
+                InserterBlock.INSERT_DIRECTION
+        );
+
+        horizontallyRotatableBlock(
+                blockModels,
+                ModBlocks.DEBUG_INSERTER.get(),
+                "block/debug_inserter",
+                DebugInserterBlock.INSERT_DIRECTION
+        );
+
+
+    }
+
+
+    private void horizontallyRotatableBlock(BlockModelGenerators blockModels,
+                                            Block block,
+                                            String path,
+                                            EnumProperty<Direction> property
+    ) {
+        ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(RimMod.MODID, path);
+        blockModels.blockStateOutput.accept(
+                MultiVariantGenerator.multiVariant(block, Variant.variant().with(VariantProperties.MODEL, resourceLocation))
+                        .with(
+                                PropertyDispatch.property(property)
+                                        .select(Direction.NORTH, Variant.variant().with(VariantProperties.Y_ROT, VariantProperties.Rotation.R0))
+                                        .select(Direction.SOUTH, Variant.variant().with(VariantProperties.Y_ROT, VariantProperties.Rotation.R180))
+                                        .select(Direction.WEST, Variant.variant().with(VariantProperties.Y_ROT, VariantProperties.Rotation.R270))
+                                        .select(Direction.EAST, Variant.variant().with(VariantProperties.Y_ROT, VariantProperties.Rotation.R90))
+                        )
+        );
+
 
     }
 

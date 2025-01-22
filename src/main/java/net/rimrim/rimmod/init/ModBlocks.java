@@ -92,11 +92,6 @@ public class ModBlocks {
                     .setId(ResourceKey.create(Registries.BLOCK, registryName))
             ));
 
- public static final DeferredBlock<CopyChestBlock> COPY_CHEST = BLOCKS.register("copy_chest",
-            registryName -> new CopyChestBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CHEST)
-                    .setId(ResourceKey.create(Registries.BLOCK, registryName))
-            ));
-
     // Helper
 
 

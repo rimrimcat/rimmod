@@ -42,14 +42,6 @@ public class ModBlockEntities {
             )
     );
 
-    public static final Supplier<BlockEntityType<CopyChestBlockEntity>> COPY_CHEST = BLOCK_ENTITY_TYPES.register(
-            "copy_chest",
-            () -> new BlockEntityType<>(
-                    CopyChestBlockEntity::new,
-                    ModBlocks.COPY_CHEST.get()
-            )
-    );
-
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITY_TYPES.register(eventBus);
     }
