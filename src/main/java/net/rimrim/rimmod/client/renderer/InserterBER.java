@@ -19,9 +19,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.rimrim.rimmod.RimMod;
+import net.rimrim.rimmod.block.DebugInserterBlock;
 import net.rimrim.rimmod.block.InserterBlock;
 import net.rimrim.rimmod.block.properties.InserterState;
+import net.rimrim.rimmod.blockentity.DebugInserterBlockEntity;
 import net.rimrim.rimmod.blockentity.InserterBlockEntity;
+import net.rimrim.rimmod.client.utils.TransformValue;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -38,6 +42,14 @@ public class InserterBER implements BlockEntityRenderer<InserterBlockEntity> {
     private final ModelPart arm_1;
     private final ModelPart arm_2;
 
+    private final Quaternionf base_q = new Quaternionf(0, 0, 0, 1).normalize();
+
+    private final Quaternionf grabber_right_q = new Quaternionf(0, -0.1400f, 0, 0.9902f).normalize();
+    private final Quaternionf grabber_left_q = new Quaternionf(0, 0.1400f, 0, 0.9902f).normalize();
+    private final float grabber_pivot_z = -0.3200f;
+
+    private final Quaternionf arm_swing_q = new Quaternionf(0, 1, 0, 0).normalize();
+    private final Quaternionf item_swing_q = new Quaternionf(0, -1, 0, 0).normalize();
 
     public InserterBER(BlockEntityRendererProvider.Context context) {
         this.context = context;
@@ -83,6 +95,11 @@ public class InserterBER implements BlockEntityRenderer<InserterBlockEntity> {
         return LayerDefinition.create(meshdefinition, 64, 64);
     }
 
+    private Quaternionf qnlerp(Quaternionf q_source, Quaternionf q_dest, float factor) {
+        Quaternionf q_source_copy = new Quaternionf(q_source.x, q_source.y, q_source.z, q_source.w);
+        return q_source_copy.nlerp(q_dest, factor);
+    }
+
     public void renderItem(
             ItemStack stack,
             InserterBlockEntity blockEntity,
@@ -117,6 +134,7 @@ public class InserterBER implements BlockEntityRenderer<InserterBlockEntity> {
         poseStack.popPose();
     }
 
+
     @Override
     public void render(InserterBlockEntity blockEntity,
                        float partialTick,
@@ -124,19 +142,14 @@ public class InserterBER implements BlockEntityRenderer<InserterBlockEntity> {
                        MultiBufferSource bufferSource,
                        int packedLight,
                        int packedOverlay) {
+        float animProgress;
 
         Level level = blockEntity.getLevel();
         if (level == null) return;
 
         InserterState state = blockEntity.getInserterState();
-        Direction dir = blockEntity.getBlockState().getValue(InserterBlock.INSERT_DIRECTION);
+        Direction dir = blockEntity.getBlockState().getValue(InserterBlock.INSERT_DIRECTION).getOpposite();
         long lastUpdateInterval = level.getGameTime() - blockEntity.getLastUpdateTime();
-        RimMod.LOGGER.info("lastUpdateInterval: " + lastUpdateInterval);
-
-
-        if (state.direction.getStep() == -1) {
-            dir = dir.getOpposite();
-        }
 
         BlockPos pos = blockEntity.getBlockPos().above();
         int light_pack = LightTexture.pack(
@@ -144,93 +157,222 @@ public class InserterBER implements BlockEntityRenderer<InserterBlockEntity> {
                 level.getBrightness(LightLayer.SKY, pos)
         );
 
-        switch (blockEntity.getInserterState()) {
-            case TAKING: {
-                // should be around 20 ticks
-                // left grabber transformations
 
-
-            }
-            case TRANSFERRING_1: {
-            }
-            case TRANSFERRING_2: {
-            }
-            case INSERTING: {
-            }
-            case RETURNING_1: {
-            }
-            case RETURNING_2: {
-            }
-        }
-
-
-        // Rotate according to blockstate (DO IT AFTER ALL TRANSFORMS)
-
-
-        render_other(poseStack, bufferSource, dir, light_pack, packedOverlay);
-//        render_grabber(poseStack, bufferSource, dir, light_pack, packedOverlay, lastUpdateInterval);
-
-
-    }
-
-
-    public void render_other(PoseStack poseStack, MultiBufferSource bufferSource, Direction dir, int packedLight, int packedOverlay) {
+        // Common setup logic
         poseStack.pushPose();
 
-        // Center
-        poseStack.translate(0.5f, 0.5f, 0.5f);
-        // Rotate upright to NORTH
-        poseStack.rotateAround(new Quaternionf(0, 0, -1, 0), 0f, 0.5f, 0f);
+        poseStack.translate(0.5f, 0.5f, 0.5f); // Generic translation
+        poseStack.rotateAround(new Quaternionf(0, 0, -1, 0), 0f, 0.5f, 0f); // Align to block space
 
-        if (dir == Direction.NORTH) {
-            //
-        } else if (dir == Direction.EAST) {
-            poseStack.rotateAround(new Quaternionf(0, -0.71, 0, 0.71), 0f, 0.5f, 0f);
-        } else if (dir == Direction.WEST) {
-            poseStack.rotateAround(new Quaternionf(0, 0.71, 0, -0.71), 0f, 0.5f, 0f);
-        } else if (dir == Direction.SOUTH) {
-            poseStack.rotateAround(new Quaternionf(0, 1, 0, 0), 0f, 0.5f, 0f);
-        }
-
-
-        base.render(poseStack, bufferSource.getBuffer(RenderType.entityCutout(TEXTURE)), packedLight, packedOverlay);
-        grabber_right.render(poseStack, bufferSource.getBuffer(RenderType.entityCutout(TEXTURE)), packedLight, packedOverlay);
-        grabber_left.render(poseStack, bufferSource.getBuffer(RenderType.entityCutout(TEXTURE)), packedLight, packedOverlay);
-        arm_1.render(poseStack, bufferSource.getBuffer(RenderType.entityCutout(TEXTURE)), packedLight, packedOverlay);
-        arm_2.render(poseStack, bufferSource.getBuffer(RenderType.entityCutout(TEXTURE)), packedLight, packedOverlay);
+        // Render the base
+        base.render(
+                poseStack,
+                bufferSource.getBuffer(RenderType.entityCutout(TEXTURE)),
+                light_pack,
+                packedOverlay
+        );
 
         poseStack.popPose();
 
+        if (lastUpdateInterval > state.maxProgress) {
+            animProgress = 1f;
+        } else {
+            animProgress = (float) lastUpdateInterval / state.maxProgress;
+        }
+
+
+        render_grabber(poseStack, bufferSource, dir,
+                light_pack, packedOverlay,
+                animProgress, state,
+                grabber_left, grabber_left_q);
+        render_grabber(poseStack, bufferSource, dir,
+                light_pack, packedOverlay,
+                animProgress, state,
+                grabber_right, grabber_right_q);
+        render_arm(poseStack, bufferSource, dir,
+                light_pack, packedOverlay,
+                animProgress, state,
+                arm_1);
+        render_arm(poseStack, bufferSource, dir,
+                light_pack, packedOverlay,
+                animProgress, state,
+                arm_2);
+
+        ItemStack stack = blockEntity.getItem(0);
+
+        if (!stack.isEmpty()) {
+            render_item_in_arm(poseStack, bufferSource, dir,
+                    light_pack,
+                    animProgress, state,
+                    level, stack);
+        }
+
     }
 
-    public void render_grabber(PoseStack poseStack, MultiBufferSource bufferSource, Direction dir, int packedLight, int packedOverlay, long update_interval) {
+    private void renderModelPart(
+            PoseStack poseStack,
+            MultiBufferSource bufferSource,
+            Direction dir,
+            int packedLight,
+            int packedOverlay,
+            ModelPart modelPart,
+            Runnable customTransformations
+    ) {
         poseStack.pushPose();
 
         poseStack.translate(0.5f, 0.5f, 0.5f);
         poseStack.rotateAround(new Quaternionf(0, 0, -1, 0), 0f, 0.5f, 0f);
 
-        // x and y messed up btw
+        // Rotate according to direction
+        // I reversed the west and east because it orients the arm perfectly that way
+        if (dir == Direction.EAST) {
+            poseStack.rotateAround(new Quaternionf(0, -0.71f, 0, -0.71f), 0f, 0.5f, 0f);
+        } else if (dir == Direction.WEST) {
+            poseStack.rotateAround(new Quaternionf(0, 0.71f, 0, -0.71f), 0f, 0.5f, 0f);
+        } else if (dir == Direction.SOUTH) {
+            poseStack.rotateAround(new Quaternionf(0, 1f, 0, 0), 0f, 0.5f, 0f);
+        }
 
-        Quaternionf q1 = new Quaternionf(0, 0, 0, 1);
-//        Quaternionf q2 = new Quaternionf(0, 0, 0, 1);
+        // Apply custom transformations unique to this model part
+        if (customTransformations != null) {
+            customTransformations.run();
+        }
 
-        Quaternionf q2 = new Quaternionf(0, -0.2, 0, 0.98);
-        Quaternionf q1_q2 = q1.nlerp(q2, (float) update_interval / 20f);
-//        poseStack.rotateAround(q1_q2, 7/16f, 5/16f, 6/16f);
-        poseStack.rotateAround(q1_q2, 0f, 5/16f, 0f);
+        modelPart.render(
+                poseStack,
+                bufferSource.getBuffer(RenderType.entityCutout(TEXTURE)),
+                packedLight,
+                packedOverlay
+        );
+
+        poseStack.popPose();
+    }
+
+    public void render_grabber(PoseStack poseStack, MultiBufferSource bufferSource, Direction dir,
+                               int packedLight, int packedOverlay,
+                               float animProgress,
+                               InserterState state,
+                               ModelPart which_grabber,
+                               Quaternionf which_grabber_q
+    ) {
+        renderModelPart(poseStack, bufferSource, dir, packedLight, packedOverlay, which_grabber, () -> {
+
+            switch (state) {
+                case TAKING: {
+                    Quaternionf qlerp = qnlerp(base_q, which_grabber_q, animProgress);
+
+                    poseStack.rotateAround(qlerp, 0, 0, grabber_pivot_z);
+                    break;
+                }
+                case TRANSFERRING: {
+                    Quaternionf qlerp = qnlerp(base_q, arm_swing_q, animProgress);
+                    poseStack.rotateAround(qlerp, 0, 0, 0);
+                    poseStack.rotateAround(which_grabber_q, 0, 0, grabber_pivot_z);
+                    break;
+                }
+                case RETURNING: {
+                    Quaternionf qlerp = qnlerp(arm_swing_q, base_q, animProgress);
+                    poseStack.rotateAround(qlerp, 0, 0, 0);
+                    break;
+                }
+                case WAIT_DESTINATION: {
+                    poseStack.rotateAround(arm_swing_q, 0, 0, 0);
+                    poseStack.rotateAround(which_grabber_q, 0, 0, grabber_pivot_z);
+                    break;
+                }
+                case INSERTING: {
+                    poseStack.rotateAround(arm_swing_q, 0, 0, 0);
+                    Quaternionf qlerp = qnlerp(which_grabber_q, base_q, animProgress);
+                    poseStack.rotateAround(qlerp, 0, 0, grabber_pivot_z);
+                    break;
+                }
+
+            }
 
 
+        });
+    }
+
+
+    public void render_arm(PoseStack poseStack, MultiBufferSource bufferSource, Direction dir,
+                           int packedLight, int packedOverlay,
+                           float animProgress,
+                           InserterState state,
+                           ModelPart which_arm
+    ) {
+        renderModelPart(poseStack, bufferSource, dir, packedLight, packedOverlay, which_arm, () -> {
+
+            switch (state) {
+                case TRANSFERRING: {
+//                    Quaternionf qlerp = new Quaternionf(arm_swing_q.x, arm_swing_q.y, arm_swing_q.z, arm_swing_q.w).nlerp(base_q, animProgress);
+                    Quaternionf qlerp = qnlerp(base_q, arm_swing_q, animProgress);
+                    poseStack.rotateAround(qlerp, 0, 0, 0);
+                    break;
+                }
+                case RETURNING: {
+//                     Quaternionf qlerp = arm_swing_q.nlerp(base_q, animProgress);
+//                     Quaternionf qlerp = base_q.nlerp(arm_swing_q, animProgress);
+                    Quaternionf qlerp = qnlerp(arm_swing_q, base_q, animProgress);
+                    poseStack.rotateAround(qlerp, 0, 0, 0);
+                    break;
+                }
+                case WAIT_DESTINATION: {
+                }
+                case INSERTING: {
+                    poseStack.rotateAround(arm_swing_q, 0, 0, 0);
+                    break;
+                }
+
+            }
+        });
+    }
+
+    private void render_item_in_arm(
+            PoseStack poseStack,
+            MultiBufferSource bufferSource,
+            Direction dir,
+            int packedLight,
+            float animProgress,
+            InserterState state,
+            Level level, ItemStack stack
+    ) {
+        poseStack.pushPose();
+        poseStack.translate(0.5f, 0.3125f, 0.5f); // To center
 
         if (dir == Direction.EAST) {
-            poseStack.rotateAround(new Quaternionf(0, -0.71, 0, 0.71), 0f, 0.5f, 0f);
+            poseStack.rotateAround(new Quaternionf(0, 0.71f, 0, -0.71f), 0f, 0.5f, 0f);
         } else if (dir == Direction.WEST) {
-            poseStack.rotateAround(new Quaternionf(0, 0.71, 0, -0.71), 0f, 0.5f, 0f);
+            poseStack.rotateAround(new Quaternionf(0, -0.71f, 0, -0.71f), 0f, 0.5f, 0f);
         } else if (dir == Direction.SOUTH) {
-            poseStack.rotateAround(new Quaternionf(0, 1, 0, 0), 0f, 0.5f, 0f);
+            poseStack.rotateAround(new Quaternionf(0, 1f, 0, 0), 0f, 0.5f, 0f);
         }
 
-//        grabber_right.render(poseStack, bufferSource.getBuffer(RenderType.entityCutout(TEXTURE)), packedLight, packedOverlay);
+        poseStack.translate(0f, 0, -0.5f); // To inserter hand at SOUTH
+
+
+        if (state == InserterState.TRANSFERRING) {
+            Quaternionf qlerp = qnlerp(base_q, item_swing_q, animProgress);
+            poseStack.rotateAround(qlerp, 0, 0, 0.5f);
+        } else {
+            poseStack.rotateAround(item_swing_q, 0, 0, 0.5f);
+        }
+
+        poseStack.scale(1 / 4f, 1 / 4f, 1 / 4f); // Make smaller
+
+
+        this.context.getItemRenderer().renderStatic(
+                stack,
+                ItemDisplayContext.FIXED,
+                packedLight,
+                OverlayTexture.NO_OVERLAY,
+                poseStack,
+                bufferSource,
+                level,
+                0
+        );
 
         poseStack.popPose();
     }
+
+
 }

@@ -5,10 +5,10 @@ import net.rimrim.rimmod.block.properties.InserterState;
 import java.util.Objects;
 
 public class TransformKey {
-    private final InserterState state;
+    private final String state;
     private final String modelPart;
 
-    public TransformKey(InserterState state, String modelPart) {
+    public TransformKey(String state, String modelPart) {
         this.state = state;
         this.modelPart = modelPart;
     }
@@ -18,7 +18,7 @@ public class TransformKey {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TransformKey key = (TransformKey) o;
-        return state == key.state && Objects.equals(modelPart, key.modelPart);
+        return Objects.equals(state, key.state) && Objects.equals(modelPart, key.modelPart);
     }
 
     @Override

@@ -17,7 +17,7 @@ public class TransformMap {
         this.DEFAULT = new TransformValue(0, 0, 0, 0, 0, 0, 1f, 0, 0, 0);
     }
 
-    public TransformValue get(InserterState state, String modelPart) {
+    public TransformValue get(String state, String modelPart) {
         return map.getOrDefault(new TransformKey(state, modelPart), new TransformValue(
                 DEFAULT.tx, DEFAULT.ty, DEFAULT.tz,
                 DEFAULT.qx, DEFAULT.qy, DEFAULT.qz, DEFAULT.qw,
@@ -25,7 +25,7 @@ public class TransformMap {
         ));
     }
 
-    public void put(InserterState state, String modelPart, TransformValue value) {
+    public void put(String state, String modelPart, TransformValue value) {
         map.put(new TransformKey(state, modelPart), new TransformValue(
                 value.tx, value.ty, value.tz,
                 value.qx, value.qy, value.qz, value.qw,

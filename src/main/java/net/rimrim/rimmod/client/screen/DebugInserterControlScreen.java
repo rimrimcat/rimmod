@@ -2,13 +2,10 @@ package net.rimrim.rimmod.client.screen;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.rimrim.rimmod.RimMod;
-import net.rimrim.rimmod.block.DebugInserterBlock;
 import net.rimrim.rimmod.block.properties.InserterState;
 import net.rimrim.rimmod.blockentity.DebugInserterBlockEntity;
 import net.rimrim.rimmod.client.renderer.DebugInserterBER;
@@ -37,10 +34,14 @@ public class DebugInserterControlScreen extends Screen {
     public static final int buttonWidth = 100;
     public static final int buttonHeight = 20;
 
-    public static final float minValue = -1.0F;
-    public static final float maxValue = 1.0F;
+    public static final float minValueQ = -1.0F;
+    public static final float maxValueQ = 1.0F;
+    public static final float minValueP = -5.0F;
+    public static final float maxValueP = 5.0F;
 
     public static String modelPart = "grabber_left";
+    public static String selectedTransform = "t1";
+    public static float transformProgress = 1f;
 
 
     public DebugInserterControlScreen() {
@@ -52,14 +53,14 @@ public class DebugInserterControlScreen extends Screen {
         return false;
     }
 
-    protected void addSliders(InserterState state) {
+    protected void addSliders() {
         int currentXslider;
         int currentYslider;
         int currentXlabel;
         int currentYlabel;
         // Get values
         TransformMap tmap = DebugInserterBER.tmap;
-        TransformValue values = tmap.get(state, modelPart);
+        TransformValue values = tmap.get(selectedTransform, modelPart);
 
         currentXslider = horizontalMargin;
         currentYslider = verticalMargin;
@@ -68,9 +69,9 @@ public class DebugInserterControlScreen extends Screen {
         addRenderableWidget(
                 new RenderableSlider(
                         currentXslider, currentYslider, sliderWidth, sliderHeight,
-                        values.qx, minValue, maxValue, value -> {
+                        values.qx, minValueQ, maxValueQ, value -> {
                     if (values.updateQuaternion('x', value)) {
-                        tmap.put(state, modelPart, values);
+                        tmap.put(selectedTransform, modelPart, values);
                         this.init();
                     }
                 }
@@ -88,9 +89,9 @@ public class DebugInserterControlScreen extends Screen {
         addRenderableWidget(
                 new RenderableSlider(
                         currentXslider, currentYslider, sliderWidth, sliderHeight,
-                        values.qy, minValue, maxValue, value -> {
+                        values.qy, minValueQ, maxValueQ, value -> {
                     if (values.updateQuaternion('y', value)) {
-                        tmap.put(state, modelPart, values);
+                        tmap.put(selectedTransform, modelPart, values);
                         this.init();
                     }
                 }
@@ -107,10 +108,10 @@ public class DebugInserterControlScreen extends Screen {
         addRenderableWidget(
                 new RenderableSlider(
                         currentXslider, currentYslider, sliderWidth, sliderHeight,
-                        values.qz, minValue, maxValue, value -> {
+                        values.qz, minValueQ, maxValueQ, value -> {
                     if (values.updateQuaternion('z', value)) {
 
-                        tmap.put(state, modelPart, values);
+                        tmap.put(selectedTransform, modelPart, values);
                         this.init();
                     }
                 }
@@ -126,15 +127,15 @@ public class DebugInserterControlScreen extends Screen {
         addRenderableWidget(
                 new RenderableSlider(
                         currentXslider, currentYslider, sliderWidth, sliderHeight,
-                        values.qw, minValue, maxValue, value -> {
+                        values.qw, minValueQ, maxValueQ, value -> {
                     if (values.updateQuaternion('w', value)) {
-                        tmap.put(state, modelPart, values);
+                        tmap.put(selectedTransform, modelPart, values);
                         this.init();
                     }
                 }
                 )
         );
-        addRenderableOnly(Button.builder(Component.literal("QZ"), null)
+        addRenderableOnly(Button.builder(Component.literal("QW"), null)
                 .pos(currentXlabel, currentYslider)
                 .size(30, sliderHeight)
                 .build());
@@ -144,9 +145,9 @@ public class DebugInserterControlScreen extends Screen {
         addRenderableWidget(
                 new RenderableSlider(
                         currentXslider, currentYslider, sliderWidth, sliderHeight,
-                        values.px, minValue, maxValue, value -> {
+                        values.px, minValueP, maxValueP, value -> {
                     values.px = value;
-                    tmap.put(state, modelPart, values);
+                    tmap.put(selectedTransform, modelPart, values);
                 }
                 )
         );
@@ -160,9 +161,9 @@ public class DebugInserterControlScreen extends Screen {
         addRenderableWidget(
                 new RenderableSlider(
                         currentXslider, currentYslider, sliderWidth, sliderHeight,
-                        values.py, minValue, maxValue, value -> {
+                        values.py, minValueP, maxValueP, value -> {
                     values.py = value;
-                    tmap.put(state, modelPart, values);
+                    tmap.put(selectedTransform, modelPart, values);
                 }
                 )
         );
@@ -177,9 +178,9 @@ public class DebugInserterControlScreen extends Screen {
         addRenderableWidget(
                 new RenderableSlider(
                         currentXslider, currentYslider, sliderWidth, sliderHeight,
-                        values.pz, minValue, maxValue, value -> {
+                        values.pz, minValueP, maxValueP, value -> {
                     values.pz = value;
-                    tmap.put(state, modelPart, values);
+                    tmap.put(selectedTransform, modelPart, values);
                 }
                 )
         );
@@ -195,9 +196,9 @@ public class DebugInserterControlScreen extends Screen {
         addRenderableWidget(
                 new RenderableSlider(
                         currentXslider, currentYslider, sliderWidth, sliderHeight,
-                        values.tx, minValue, maxValue, value -> {
+                        values.tx, minValueQ, maxValueQ, value -> {
                     values.tx = value;
-                    tmap.put(state, modelPart, values);
+                    tmap.put(selectedTransform, modelPart, values);
                 }
                 )
         );
@@ -211,9 +212,9 @@ public class DebugInserterControlScreen extends Screen {
         addRenderableWidget(
                 new RenderableSlider(
                         currentXslider, currentYslider, sliderWidth, sliderHeight,
-                        values.ty, minValue, maxValue, value -> {
+                        values.ty, minValueQ, maxValueQ, value -> {
                     values.ty = value;
-                    tmap.put(state, modelPart, values);
+                    tmap.put(selectedTransform, modelPart, values);
                 }
                 )
         );
@@ -227,9 +228,9 @@ public class DebugInserterControlScreen extends Screen {
         addRenderableWidget(
                 new RenderableSlider(
                         currentXslider, currentYslider, sliderWidth, sliderHeight,
-                        values.tz, minValue, maxValue, value -> {
+                        values.tz, minValueQ, maxValueQ, value -> {
                     values.tz = value;
-                    tmap.put(state, modelPart, values);
+                    tmap.put(selectedTransform, modelPart, values);
                 }
                 )
         );
@@ -246,30 +247,44 @@ public class DebugInserterControlScreen extends Screen {
 
         InserterState state = DebugInserterBlockEntity.state;
 
-        addSliders(state);
+        addSliders();
 
         addRenderableWidget(
-                Button.builder(Component.literal("Reset Values"), button -> resetValues())
+                Button.builder(Component.literal("reset"), button -> resetValues())
                         .pos(width - horizontalMargin - buttonWidth, 10 + (sliderHeight * 3 + verticalSpacing * 4))
                         .size(buttonWidth, buttonHeight)
                         .build()
         );
 
         addRenderableWidget(
-                Button.builder(Component.literal(state.name), button -> nextState())
+                Button.builder(Component.literal("edit:" + selectedTransform), button -> nextTransform())
                         .pos(width - horizontalMargin - buttonWidth, 10 + (sliderHeight * 3 + verticalSpacing * 5 + buttonHeight))
                         .size(buttonWidth, buttonHeight)
                         .build()
         );
 
         addRenderableWidget(
+                new RenderableSlider(
+                        width - horizontalMargin - buttonWidth, 10 + (sliderHeight * 3 + verticalSpacing * 6 + buttonHeight * 2),
+                        buttonWidth, buttonHeight,
+                        DebugInserterBER.animationProgress, 0, 20, value -> {
+
+                    if (DebugInserterBER.animationProgress != value) {
+                        DebugInserterBER.animationProgress = (int) value;
+
+                        this.init();
+                    }
+
+                }
+                )
+        );
+
+        addRenderableWidget(
                 Button.builder(Component.literal(modelPart), button -> nextPart())
-                        .pos(width - horizontalMargin - buttonWidth, 10 + (sliderHeight * 3 + verticalSpacing * 6 + buttonHeight * 2))
+                        .pos(width - horizontalMargin - buttonWidth, 10 + (sliderHeight * 3 + verticalSpacing * 7 + buttonHeight * 3))
                         .size(buttonWidth, buttonHeight)
                         .build()
         );
-
-        // Add Labels
 
 
     }
@@ -319,7 +334,7 @@ public class DebugInserterControlScreen extends Screen {
     // Resets all values to their default state
     private void resetValues() {
         TransformMap tmap = DebugInserterBER.tmap;
-        tmap.put(DebugInserterBlockEntity.state, modelPart, tmap.DEFAULT);
+        tmap.put(selectedTransform, modelPart, tmap.DEFAULT);
         // Update sliders to reflect the reset values
         this.init(); // Reinitialize the screen to reset sliders
     }
@@ -327,13 +342,22 @@ public class DebugInserterControlScreen extends Screen {
     private void nextState() {
         switch (DebugInserterBlockEntity.state) {
             case WAIT_SOURCE -> DebugInserterBlockEntity.state = InserterState.TAKING;
-            case TAKING -> DebugInserterBlockEntity.state = InserterState.TRANSFERRING_1;
-            case TRANSFERRING_1 -> DebugInserterBlockEntity.state = InserterState.TRANSFERRING_2;
-            case TRANSFERRING_2 -> DebugInserterBlockEntity.state = InserterState.WAIT_DESTINATION;
+            case TAKING -> DebugInserterBlockEntity.state = InserterState.TRANSFERRING;
+            case TRANSFERRING -> DebugInserterBlockEntity.state = InserterState.WAIT_DESTINATION;
             case WAIT_DESTINATION -> DebugInserterBlockEntity.state = InserterState.INSERTING;
-            case INSERTING -> DebugInserterBlockEntity.state = InserterState.RETURNING_1;
-            case RETURNING_1 -> DebugInserterBlockEntity.state = InserterState.RETURNING_2;
-            case RETURNING_2 -> DebugInserterBlockEntity.state = InserterState.WAIT_SOURCE;
+            case INSERTING -> DebugInserterBlockEntity.state = InserterState.RETURNING;
+            case RETURNING -> DebugInserterBlockEntity.state = InserterState.WAIT_SOURCE;
+        }
+        this.init();
+    }
+
+
+    private void nextTransform() {
+        switch (selectedTransform) {
+            case "t1" -> selectedTransform = "t2";
+            case "t2" -> selectedTransform = "t3";
+            case "t3" -> selectedTransform = "t4";
+            case "t4" -> selectedTransform = "t1";
         }
         this.init();
     }

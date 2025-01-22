@@ -42,13 +42,6 @@ public class InserterBlockEntity extends BlockEntity implements MenuProvider {
 
     public static final int SIZE = 1;
 
-    public static final int TAKING_MAX_PROGRESS = 20; // Duration in ticks needed
-    public static final int TRANSFER1_MAX_PROGRESS = 40;
-    public static final int TRANSFER2_MAX_PROGRESS = 40;
-    public static final int INSERTING_MAX_PROGRESS = 20;
-    public static final int RETURNING1_MAX_PROGRESS = 40;
-    public static final int RETURNING2_MAX_PROGRESS = 40;
-
     private int move_speed; // how much progress increments per tick
 
     private InserterState state;
@@ -233,6 +226,7 @@ public class InserterBlockEntity extends BlockEntity implements MenuProvider {
 
                 for (int i = 0; i < max_slot; i++) {
                     ItemStack stackInSlot = item_cap.getStackInSlot(i);
+
                     if (!stackInSlot.isEmpty()) {
                         // Found the first slot with a valid item
 
@@ -285,8 +279,9 @@ public class InserterBlockEntity extends BlockEntity implements MenuProvider {
             dir = dir.getOpposite();
         }
 
+        int maxProgress = inserter.state.maxProgress;
         inserter.lastUpdateTime = level.getGameTime();
-
+//        RimMod.LOGGER.info("Inserter state " + inserter.state.name);
 
         switch (inserter.state) {
             case WAIT_SOURCE: {
@@ -299,7 +294,7 @@ public class InserterBlockEntity extends BlockEntity implements MenuProvider {
                     level.sendBlockUpdated(blockPos, blockState, blockState, Block.UPDATE_CLIENTS);
                 } else if (!inserter.getItemHandler().getStackInSlot(0).isEmpty()) {
                     // Someone gave the inserter an item through menu
-                    inserter.state = InserterState.TRANSFERRING_1;
+                    inserter.state = InserterState.TRANSFERRING;
 
                     level.sendBlockUpdated(blockPos, blockState, blockState, Block.UPDATE_CLIENTS);
                 }
@@ -307,12 +302,12 @@ public class InserterBlockEntity extends BlockEntity implements MenuProvider {
                 break;
             }
             case TAKING: {
-                if (inserter.progress < TAKING_MAX_PROGRESS) {
+                if (inserter.progress < maxProgress) {
                     inserter.progress += inserter.move_speed;
                 } else {
                     if (!inserter.getItemHandler().getStackInSlot(0).isEmpty()) {
                         // Someone gave the inserter an item through menu
-                        inserter.state = InserterState.TRANSFERRING_1;
+                        inserter.state = InserterState.TRANSFERRING;
                         inserter.progress = 0;
 
                         level.sendBlockUpdated(blockPos, blockState, blockState, Block.UPDATE_CLIENTS);
@@ -326,7 +321,7 @@ public class InserterBlockEntity extends BlockEntity implements MenuProvider {
                         assert res.outputItem != null;
                         inserter.getItemHandler().insertItem(0, res.outputItem, false);
 
-                        inserter.state = InserterState.TRANSFERRING_1;
+                        inserter.state = InserterState.TRANSFERRING;
                         inserter.progress = 0;
 
                         level.sendBlockUpdated(blockPos, blockState, blockState, Block.UPDATE_CLIENTS);
@@ -341,32 +336,14 @@ public class InserterBlockEntity extends BlockEntity implements MenuProvider {
                 }
                 break;
             }
-            case TRANSFERRING_1: {
-                if (inserter.progress < TRANSFER1_MAX_PROGRESS) {
+            case TRANSFERRING: {
+                if (inserter.progress < maxProgress) {
                     inserter.progress += inserter.move_speed;
                 } else {
                     inserter.progress = 0;
 
                     if (inserter.getItemHandler().getStackInSlot(0).isEmpty()) {
-                        inserter.state = InserterState.WAIT_SOURCE;
-
-                        level.sendBlockUpdated(blockPos, blockState, blockState, Block.UPDATE_CLIENTS);
-                    } else {
-                        inserter.state = InserterState.TRANSFERRING_2;
-
-                        level.sendBlockUpdated(blockPos, blockState, blockState, Block.UPDATE_CLIENTS);
-                    }
-                }
-                break;
-            }
-            case TRANSFERRING_2: {
-                if (inserter.progress < TRANSFER2_MAX_PROGRESS) {
-                    inserter.progress += inserter.move_speed;
-                } else {
-                    inserter.progress = 0;
-
-                    if (inserter.getItemHandler().getStackInSlot(0).isEmpty()) {
-                        inserter.state = InserterState.RETURNING_1;
+                        inserter.state = InserterState.RETURNING;
 
                         level.sendBlockUpdated(blockPos, blockState, blockState, Block.UPDATE_CLIENTS);
                     } else {
@@ -374,14 +351,13 @@ public class InserterBlockEntity extends BlockEntity implements MenuProvider {
 
                         level.sendBlockUpdated(blockPos, blockState, blockState, Block.UPDATE_CLIENTS);
                     }
-
                 }
                 break;
             }
             case WAIT_DESTINATION: {
                 if (inserter.getItemHandler().getStackInSlot(0).isEmpty()) {
                     // Someone took the item from the inserter through menu
-                    inserter.state = InserterState.RETURNING_1;
+                    inserter.state = InserterState.RETURNING;
                     inserter.progress = 0;
 
                     level.sendBlockUpdated(blockPos, blockState, blockState, Block.UPDATE_CLIENTS);
@@ -400,12 +376,12 @@ public class InserterBlockEntity extends BlockEntity implements MenuProvider {
                 break;
             }
             case INSERTING: {
-                if (inserter.progress < INSERTING_MAX_PROGRESS) {
+                if (inserter.progress < maxProgress) {
                     inserter.progress += inserter.move_speed;
                 } else {
                     if (inserter.getItemHandler().getStackInSlot(0).isEmpty()) {
                         // Someone took the item from the inserter through menu
-                        inserter.state = InserterState.RETURNING_1;
+                        inserter.state = InserterState.RETURNING;
                         inserter.progress = 0;
 
                         level.sendBlockUpdated(blockPos, blockState, blockState, Block.UPDATE_CLIENTS);
@@ -417,7 +393,7 @@ public class InserterBlockEntity extends BlockEntity implements MenuProvider {
                     int res = putItem(dest_pos, dir, level, item);
 
                     inserter.progress = 0;
-                    inserter.state = InserterState.RETURNING_1;
+                    inserter.state = InserterState.RETURNING;
 
                     if (res == -1) {
                         ItemEntity itemEntity = new ItemEntity(level, dest_pos.getX() + 0.5, dest_pos.getY() + 0.5, dest_pos.getZ() + 0.5, item);
@@ -428,19 +404,8 @@ public class InserterBlockEntity extends BlockEntity implements MenuProvider {
                 }
                 break;
             }
-            case RETURNING_1: {
-                if (inserter.progress < RETURNING1_MAX_PROGRESS) {
-                    inserter.progress += inserter.move_speed;
-                } else {
-                    inserter.progress = 0;
-                    inserter.state = InserterState.RETURNING_2;
-
-                    level.sendBlockUpdated(blockPos, blockState, blockState, Block.UPDATE_CLIENTS);
-                }
-                break;
-            }
-            case RETURNING_2: {
-                if (inserter.progress < RETURNING2_MAX_PROGRESS) {
+            case RETURNING: {
+                if (inserter.progress < maxProgress) {
                     inserter.progress += inserter.move_speed;
                 } else {
                     inserter.progress = 0;

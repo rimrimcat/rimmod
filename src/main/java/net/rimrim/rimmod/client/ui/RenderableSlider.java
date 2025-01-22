@@ -44,7 +44,7 @@ public class RenderableSlider extends AbstractWidget {
      * Updates the display message to include the current value.
      */
     private void updateMessage() {
-        this.setMessage(Component.literal(String.format("%.2f", this.currentValue)));
+        this.setMessage(Component.literal(String.format("%.4f", this.currentValue)));
     }
 
     @Override
@@ -79,7 +79,7 @@ public class RenderableSlider extends AbstractWidget {
                 mouseY >= this.getY() && mouseY <= this.getY() + this.height) {
 
             // Determine the scroll direction and adjust the slider value
-            float increment = (this.maxValue - this.minValue) / 10.0f; // Define how much to increment/decrement
+            float increment = (this.maxValue - this.minValue) / 1000.0f; // Define how much to increment/decrement
             if (scrollY > 0) {
                 this.setValue(this.getValue() + increment);
             } else if (scrollY < 0) {
