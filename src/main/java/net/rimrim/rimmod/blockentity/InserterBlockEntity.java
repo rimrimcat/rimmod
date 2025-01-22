@@ -176,22 +176,6 @@ public class InserterBlockEntity extends BlockEntity implements MenuProvider {
         return new InserterMenu(containerId, playerInventory, this);
     }
 
-    // TODO
-    public Vector3f getItemOffsetFromCenter() {
-        switch (this.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING)) {
-            case NORTH:
-                return new Vector3f(0f, -0.1875f, -0.5f);
-            case SOUTH:
-                return new Vector3f(0f, -0.1875f, 0.5f);
-            case WEST:
-                return new Vector3f(-0.5f, -0.1875f, 0f);
-            case EAST:
-                return new Vector3f(0.5f, -0.1875f, 0f);
-            default:
-                return new Vector3f(0.0f, 0.0f, 0.0f);
-        }
-    }
-
     public InserterState getInserterState() {
         return this.state;
     }
