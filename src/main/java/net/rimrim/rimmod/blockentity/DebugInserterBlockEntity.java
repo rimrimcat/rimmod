@@ -284,7 +284,7 @@ public class DebugInserterBlockEntity extends BlockEntity  {
 
         switch(inserter.state) {
             case TAKING : {
-                if (inserter.progress < TAKING_MAX_PROGRESS) {
+                if (inserter.progress < inserter.state.maxProgress) {
                     inserter.progress += 1;
                 } else {
                     inserter.progress = 0;
@@ -292,16 +292,8 @@ public class DebugInserterBlockEntity extends BlockEntity  {
                 }
                 break;
             }
-            case TRANSFERRING_1: {
-                if (inserter.progress < TRANSFER1_MAX_PROGRESS) {
-                    inserter.progress += 1;
-                } else {
-                    inserter.progress = 0;
-                    level.sendBlockUpdated(blockPos, blockState, blockState, Block.UPDATE_CLIENTS);
-                }
-            }
-            case TRANSFERRING_2: {
-                if (inserter.progress < TRANSFER2_MAX_PROGRESS) {
+            case TRANSFERRING: {
+                if (inserter.progress < inserter.state.maxProgress) {
                     inserter.progress += 1;
                 } else {
                     inserter.progress = 0;
@@ -309,23 +301,15 @@ public class DebugInserterBlockEntity extends BlockEntity  {
                 }
             }
             case INSERTING: {
-                if (inserter.progress < INSERTING_MAX_PROGRESS) {
+                if (inserter.progress < inserter.state.maxProgress) {
                     inserter.progress += 1;
                 } else {
                     inserter.progress = 0;
                     level.sendBlockUpdated(blockPos, blockState, blockState, Block.UPDATE_CLIENTS);
                 }
             }
-            case RETURNING_1: {
-                if (inserter.progress < RETURNING1_MAX_PROGRESS) {
-                    inserter.progress += 1;
-                } else {
-                    inserter.progress = 0;
-                    level.sendBlockUpdated(blockPos, blockState, blockState, Block.UPDATE_CLIENTS);
-                }
-            }
-            case RETURNING_2: {
-                if (inserter.progress < RETURNING2_MAX_PROGRESS) {
+            case RETURNING: {
+                if (inserter.progress < inserter.state.maxProgress) {
                     inserter.progress += 1;
                 } else {
                     inserter.progress = 0;
