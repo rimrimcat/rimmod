@@ -55,12 +55,6 @@ public class ModBlocks {
 //                            .sound(SoundType.STONE)
             ));
 
-    public static final DeferredBlock<ExampleMenuBlock> EXAMPLE_MENU = BLOCKS.register("example_menu",
-            registryName -> new ExampleMenuBlock(
-                    BlockBehaviour.Properties.of()
-                            .setId(ResourceKey.create(Registries.BLOCK, registryName))
-                            .sound(SoundType.CALCITE)
-            ));
 
     public static final DeferredBlock<Block> EXAMPLE_ORE = BLOCKS.register("example_ore", registryName ->
             new ExampleOreBlock(

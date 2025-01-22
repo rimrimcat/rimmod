@@ -7,7 +7,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.rimrim.rimmod.RimMod;
-import net.rimrim.rimmod.menu.ExampleMenu;
 import net.rimrim.rimmod.menu.InserterMenu;
 import net.rimrim.rimmod.menu.TankMenu;
 
@@ -20,11 +19,6 @@ public class ModMenus {
     public static final Supplier<MenuType<TankMenu>> TANK_MENU = MENU_TYPES.register(
             "tank_menu",
             () -> new MenuType<>(TankMenu::new, FeatureFlags.DEFAULT_FLAGS)
-    );
-
-    public static final Supplier<MenuType<ExampleMenu>> EXAMPLE_MENU = MENU_TYPES.register(
-            "example_menu",
-            () -> new MenuType<>(ExampleMenu::new, FeatureFlags.DEFAULT_FLAGS)
     );
 
     public static final Supplier<MenuType<InserterMenu>> INSERTER_MENU = MENU_TYPES.register(

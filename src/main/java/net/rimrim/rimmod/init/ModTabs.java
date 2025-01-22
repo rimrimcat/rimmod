@@ -21,7 +21,6 @@ public class ModTabs {
                         output.accept(ModItems.EXAMPLE_ITEM.get());
                         output.accept(ModItems.EXAMPLE_BLOCK_ITEM.get());
                         output.accept(ModItems.TANK.get());
-                        output.accept(ModItems.EXAMPLE_MENU.get());
                         output.accept(ModItems.EXAMPLE_ORE.get());
                         output.accept(ModItems.DEEPSLATE_EXAMPLE_ORE.get());
                         output.accept(ModItems.INSERTER.get());

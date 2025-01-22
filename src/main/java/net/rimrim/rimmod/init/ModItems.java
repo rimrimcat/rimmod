@@ -35,7 +35,6 @@ public class ModItems {
 
 
     public static final DeferredItem<BlockItem> TANK = ITEMS.registerSimpleBlockItem("tank", ModBlocks.TANK);
-    public static final DeferredItem<BlockItem> EXAMPLE_MENU = ITEMS.registerSimpleBlockItem("example_menu", ModBlocks.EXAMPLE_MENU);
     public static final DeferredItem<BlockItem> EXAMPLE_ORE = ITEMS.registerSimpleBlockItem("example_ore", ModBlocks.EXAMPLE_ORE);
     public static final DeferredItem<BlockItem> DEEPSLATE_EXAMPLE_ORE = ITEMS.registerSimpleBlockItem("deepslate_example_ore", ModBlocks.DEEPSLATE_EXAMPLE_ORE);
     public static final DeferredItem<BlockItem> INSERTER = ITEMS.registerSimpleBlockItem("inserter", ModBlocks.INSERTER);

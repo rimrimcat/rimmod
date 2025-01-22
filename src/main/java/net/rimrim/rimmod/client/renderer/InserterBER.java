@@ -100,41 +100,6 @@ public class InserterBER implements BlockEntityRenderer<InserterBlockEntity> {
         return q_source_copy.nlerp(q_dest, factor);
     }
 
-    public void renderItem(
-            ItemStack stack,
-            InserterBlockEntity blockEntity,
-            PoseStack poseStack,
-            MultiBufferSource bufferSource,
-            Level level
-    ) {
-        BlockPos pos = blockEntity.getBlockPos().above();
-        int light_pack = LightTexture.pack(
-                level.getBrightness(LightLayer.BLOCK, pos),
-                level.getBrightness(LightLayer.SKY, pos)
-        );
-
-        float downscale_factor = 4f;
-        Vector3f itemOffset = blockEntity.getItemOffsetFromCenter().mul(downscale_factor); // Multiply by factor since it affects translation
-
-        poseStack.pushPose();
-        poseStack.translate(0.5, 0.5, 0.5); // Translate to middle of block
-        poseStack.scale(1 / downscale_factor, 1 / downscale_factor, 1 / downscale_factor); // Make smaller
-        poseStack.translate(itemOffset.x, itemOffset.y, itemOffset.z); // Translate to inserter hand
-
-        this.context.getItemRenderer().renderStatic(
-                stack,
-                ItemDisplayContext.FIXED,
-                light_pack,
-                OverlayTexture.NO_OVERLAY,
-                poseStack,
-                bufferSource,
-                level,
-                0
-        );
-        poseStack.popPose();
-    }
-
-
     @Override
     public void render(InserterBlockEntity blockEntity,
                        float partialTick,

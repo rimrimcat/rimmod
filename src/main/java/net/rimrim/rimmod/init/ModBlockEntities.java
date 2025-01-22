@@ -26,14 +26,6 @@ public class ModBlockEntities {
             )
     );
 
-    public static final Supplier<BlockEntityType<ExampleMenuBlockEntity>> EXAMPLE_MENU = BLOCK_ENTITY_TYPES.register(
-            "example_menu_block_entity",
-            () -> new BlockEntityType<>(
-                    ExampleMenuBlockEntity::new,
-                    ModBlocks.EXAMPLE_MENU.get()
-            )
-    );
-
     public static final Supplier<BlockEntityType<InserterBlockEntity>> INSERTER = BLOCK_ENTITY_TYPES.register(
             "inserter",
             () -> new BlockEntityType<>(
