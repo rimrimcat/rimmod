@@ -11,6 +11,7 @@ import net.rimrim.rimmod.RimMod;
 import net.rimrim.rimmod.client.renderer.DebugInserterBER;
 import net.rimrim.rimmod.client.renderer.InserterBER;
 import net.rimrim.rimmod.client.screen.InserterScreen;
+import net.rimrim.rimmod.client.screen.TankScreen;
 import net.rimrim.rimmod.init.ModBlockEntities;
 import net.rimrim.rimmod.init.ModMenus;
 
@@ -33,6 +34,7 @@ public class ClientHandler {
     @SubscribeEvent
     private static void registerScreens(RegisterMenuScreensEvent event) {
         event.register(ModMenus.INSERTER_MENU.get(), InserterScreen::new);
+        event.register(ModMenus.TANK_MENU.get(), TankScreen::new);
     }
 
     @SubscribeEvent

@@ -35,19 +35,14 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 public class InserterBlockEntity extends BlockEntity implements MenuProvider {
-    public static final BlockCapability<IItemHandler, Void> ITEM_HANDLER_NO_CONTEXT =
-            BlockCapability.createVoid(
-                    ResourceLocation.fromNamespaceAndPath(RimMod.MODID, "item_handler_no_context"),
-                    IItemHandler.class);
-
     public static final int SIZE = 1;
+    private long lastUpdateTime; // track last update on client
 
-    private int move_speed; // how much progress increments per tick
 
     private InserterState state;
+    private int move_speed; // how much progress increments per tick
     private int progress;
 
-    private long lastUpdateTime; // track last update on client
 
     private final ItemStackHandler itemHandler = new ItemStackHandler(SIZE) {
         @Override
@@ -75,9 +70,21 @@ public class InserterBlockEntity extends BlockEntity implements MenuProvider {
         return this.itemHandler.getStackInSlot(0).isEmpty();
     }
 
+    public ItemStackHandler getItemHandler() {
+        return itemHandler;
+    }
+
     // Return the item stack in the specified slot.
+    public ItemStack getItem() {
+        return this.getItem(0);
+    }
+
     public ItemStack getItem(int slot) {
         return this.itemHandler.getStackInSlot(slot);
+    }
+
+    public void setItem(ItemStack item) {
+        this.setItem(0, item);
     }
 
     public void setItem(int slot, ItemStack item) {
@@ -86,8 +93,13 @@ public class InserterBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     // The display name of the menu. Don't forget to add a translation!
-    protected Component getDefaultName() {
-        return Component.translatable("container.rimmod.inserter");
+    public Component getDefaultName() {
+        return TITLE;
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return TITLE;
     }
 
     // Read values from the passed CompoundTag here.
@@ -135,41 +147,6 @@ public class InserterBlockEntity extends BlockEntity implements MenuProvider {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
-    // Optionally: Run some custom logic when the packet is received.
-    // The super/default implementation forwards to #loadAdditional.
-    @Override
-    public void onDataPacket(Connection connection, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider registries) {
-        super.onDataPacket(connection, packet, registries);
-        // Do whatever you need to do here.
-
-    }
-
-
-    public ItemStackHandler getItemHandler() {
-        return itemHandler;
-    }
-//
-//    // SYNC ON BLOCK UPDATE
-//    // Return our packet here. This method returning a non-null result tells the game to use this packet for syncing.
-//    @Override
-//    public Packet<ClientGamePacketListener> getUpdatePacket() {
-//        // The packet uses the CompoundTag returned by #getUpdateTag. An alternative overload of #create exists
-//        // that allows you to specify a custom update tag, including the ability to omit data the client might not need.
-//        return ClientboundBlockEntityDataPacket.create(this);
-//    }
-//
-//    // Optionally: Run some custom logic when the packet is received.
-//    // The super/default implementation forwards to #loadAdditional.
-//    @Override
-//    public void onDataPacket(Connection connection, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider registries) {
-//        super.onDataPacket(connection, packet, registries);
-//        // Do whatever you need to do here.
-//    }
-
-    @Override
-    public Component getDisplayName() {
-        return TITLE;
-    }
 
     @Override
     public @Nullable AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
@@ -224,7 +201,7 @@ public class InserterBlockEntity extends BlockEntity implements MenuProvider {
         return new GetterResult(false, null);
     }
 
-    private static int putItem(BlockPos pos, Direction dir, Level level, @Nullable ItemStack item) {
+    private static int putItem(BlockPos pos, Direction dir, Level level, ItemStack item, boolean simulate) {
         BlockEntity dest_entity = level.getBlockEntity(pos);
 
         if (dest_entity != null) {
@@ -238,14 +215,19 @@ public class InserterBlockEntity extends BlockEntity implements MenuProvider {
                     ItemStack stackInSlot = item_cap.getStackInSlot(i);
                     if (stackInSlot.isEmpty()) {
                         // Found the first slot with empty slot
-                        if (item == null) {
-                            return i;
-                        } else {
-                            ItemStack ret = item_cap.insertItem(i, item, false);
-                            if (ret.isEmpty()) {
+                        // Check if we can insert item
+
+
+                        if (item_cap.isItemValid(i, item)) {
+                            ItemStack ret = item_cap.insertItem(i, item, true);
+                            if (simulate && ret.isEmpty()) {
+                                return i;
+                            } else if (!simulate && ret.isEmpty()) {
+                                item_cap.insertItem(i, item, false);
                                 return i;
                             }
                         }
+
                     }
                 }
             }
@@ -309,8 +291,7 @@ public class InserterBlockEntity extends BlockEntity implements MenuProvider {
                         inserter.progress = 0;
 
                         level.sendBlockUpdated(blockPos, blockState, blockState, Block.UPDATE_CLIENTS);
-                    }
-                    else {
+                    } else {
                         // The Inserter wasn't able to successfully take item
                         inserter.state = InserterState.WAIT_SOURCE;
                         inserter.progress = 0;
@@ -349,7 +330,8 @@ public class InserterBlockEntity extends BlockEntity implements MenuProvider {
                 }
 
                 BlockPos dest_pos = blockPos.relative(dir, 1);
-                int res = putItem(dest_pos, dir, level, null);
+                ItemStack stack = inserter.itemHandler.getStackInSlot(0);
+                int res = putItem(dest_pos, dir, level, stack, true);
                 if (res != -1) {
                     // The Inserter can put item since inventory has empty slot
                     inserter.state = InserterState.INSERTING;
@@ -374,7 +356,7 @@ public class InserterBlockEntity extends BlockEntity implements MenuProvider {
 
                     BlockPos dest_pos = blockPos.relative(dir, 1);
                     ItemStack item = inserter.itemHandler.extractItem(0, inserter.itemHandler.getStackInSlot(0).getCount(), false);
-                    int res = putItem(dest_pos, dir, level, item);
+                    int res = putItem(dest_pos, dir, level, item, false);
 
                     inserter.progress = 0;
                     inserter.state = InserterState.RETURNING;

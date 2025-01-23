@@ -2,57 +2,99 @@ package net.rimrim.rimmod.blockentity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.rimrim.rimmod.RimMod;
 import net.rimrim.rimmod.init.ModBlockEntities;
 import net.rimrim.rimmod.menu.TankMenu;
+import net.rimrim.rimmod.menu.itemhandler.TankItemHandler;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class TankBlockEntity extends BaseContainerBlockEntity {
-    // The container size. This can of course be any value you want.
-    public static final int SIZE = 1;
-    private NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
+public class TankBlockEntity extends BlockEntity implements MenuProvider {
+    public static final int SIZE = 2;
 
-    private int value;
+    private final TankItemHandler itemHandler = new TankItemHandler(){
+        @Override
+        protected void onContentsChanged(int slot) {
+            super.onContentsChanged(slot);
+            TankBlockEntity.this.setChanged();
+        }
+    };
+
+
+    private final FluidTank fluidTank = new FluidTank(10000) {
+        @Override
+        protected void onContentsChanged() {
+            super.onContentsChanged();
+            TankBlockEntity.this.setChanged();
+        }
+    };
+
+
+    private static final Component TITLE = Component.translatable("container." + RimMod.MODID + ".tank");
+
 
     public TankBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.TANK.get(), pos, state);
 
     }
 
-    // container stuff
-    // The container size, like before.
-    @Override
     public int getContainerSize() {
         return SIZE;
     }
-    // The getter for our item stack list.
-    @Override
-    protected NonNullList<ItemStack> getItems() {
-        return items;
+
+
+    public ItemStackHandler getItemHandler() {
+        return itemHandler;
     }
 
-    // The setter for our item stack list.
-    @Override
-    protected void setItems(NonNullList<ItemStack> items) {
-        this.items = items;
+
+    public boolean isEmpty() {
+        return this.itemHandler.getStackInSlot(0).isEmpty() && this.itemHandler.getStackInSlot(1).isEmpty();
     }
 
-    // The display name of the menu. Don't forget to add a translation!
-    @Override
-    protected Component getDefaultName() {
-        return Component.translatable("container.rimmod.tank");
+    public @NotNull ItemStack getItem() {
+        return this.itemHandler.getStackInSlot(0);
+    }
+
+    public @NotNull ItemStack getFluidItem() {
+        return this.itemHandler.getStackInSlot(1);
+    }
+
+    public FluidTank getFluidTank() {
+        return this.fluidTank;
+    }
+
+    public FluidStack getFluid() {
+        return this.fluidTank.getFluid();
+    }
+
+    public int getAvailableFluidCapacity() {
+        return this.fluidTank.getCapacity() - this.fluidTank.getFluidAmount();
+    }
+
+
+    public Component getDisplayName() {
+        return TITLE;
     }
 
 
@@ -60,17 +102,18 @@ public class TankBlockEntity extends BaseContainerBlockEntity {
     @Override
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
-        // Will default to 0 if absent. See the NBT article for more information.
-        this.value = tag.getInt("value");
+
+        itemHandler.deserializeNBT(registries, tag.getCompound("Inventory"));
+        fluidTank.readFromNBT(registries, tag.getCompound("FluidTank"));
     }
 
     // Save values into the passed CompoundTag here.
     @Override
     public void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
-        tag.putInt("value", this.value);
 
-        this.setChanged();
+        tag.put("Inventory", itemHandler.serializeNBT(registries));
+        tag.put("FluidTank", fluidTank.writeToNBT(registries, new CompoundTag()));
     }
 
     // SYNC ON CHUNK LOAD
@@ -82,12 +125,6 @@ public class TankBlockEntity extends BaseContainerBlockEntity {
         return tag;
     }
 
-    // Handle a received update tag here. The default implementation calls #loadAdditional here,
-    // so you do not need to override this method if you don't plan to do anything beyond that.
-    @Override
-    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
-        super.handleUpdateTag(tag, registries);
-    }
 
     // SYNC ON BLOCK UPDATE
     // Return our packet here. This method returning a non-null result tells the game to use this packet for syncing.
@@ -98,27 +135,50 @@ public class TankBlockEntity extends BaseContainerBlockEntity {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
-    // Optionally: Run some custom logic when the packet is received.
-    // The super/default implementation forwards to #loadAdditional.
-    @Override
-    public void onDataPacket(Connection connection, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider registries) {
-        super.onDataPacket(connection, packet, registries);
-        // Do whatever you need to do here.
-    }
+    private void sendUpdate() {
+        setChanged();
 
-    // Custom Menu
-//    @Override
-//    protected AbstractContainerMenu createMenu(int containerId, Inventory inventory) {
-//        return new TankMenu(containerId, inventory, this.worldPosition, this.level);
-//    }
-
-    @Override
-    protected AbstractContainerMenu createMenu(int id, Inventory player) {
-        return new TankMenu(id, player);
+        if (this.level != null) {
+            this.level.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), Block.UPDATE_ALL);
+        }
     }
 
     public static <T extends BlockEntity> void tick(Level level, BlockPos blockPos, BlockState blockState, T t) {
-        //
+        if (level == null || level.isClientSide()) return;
 
+        TankBlockEntity tank = (TankBlockEntity) level.getBlockEntity(blockPos);
+        if (tank == null) return;
+
+        ItemStack stack = tank.getFluidItem();
+        if (stack.isEmpty()) return;
+
+        FluidTank fluidTank = tank.getFluidTank();
+        if (tank.getAvailableFluidCapacity() < 1000) return;
+
+        // Get Item capability
+        IFluidHandlerItem itemFluidHandler = stack.getCapability(Capabilities.FluidHandler.ITEM, null);
+        if (itemFluidHandler == null) return;
+
+        // Drain item content if possible
+        int acceptableCapacity = tank.getFluidTank().getCapacity() - tank.getFluidTank().getFluidAmount();
+        int drainable = itemFluidHandler.drain(acceptableCapacity, IFluidHandler.FluidAction.SIMULATE).getAmount();
+
+
+        if (drainable > 0) {
+            tank.getFluidTank().fill(itemFluidHandler.drain(drainable, IFluidHandler.FluidAction.EXECUTE), IFluidHandler.FluidAction.EXECUTE);
+            RimMod.LOGGER.info("Filled fluid tank");
+
+            if (drainable <= acceptableCapacity) {
+                tank.getItemHandler().setStackInSlot(1, itemFluidHandler.getContainer());
+            }
+
+            tank.sendUpdate();
+        }
+
+    }
+
+    @Override
+    public @Nullable AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+        return new TankMenu(containerId, playerInventory, this);
     }
 }

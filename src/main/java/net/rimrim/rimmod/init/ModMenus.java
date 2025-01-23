@@ -17,8 +17,8 @@ public class ModMenus {
     public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(Registries.MENU, RimMod.MODID);
 
     public static final Supplier<MenuType<TankMenu>> TANK_MENU = MENU_TYPES.register(
-            "tank_menu",
-            () -> new MenuType<>(TankMenu::new, FeatureFlags.DEFAULT_FLAGS)
+            "tank",
+            () -> IMenuTypeExtension.create(TankMenu::new)
     );
 
     public static final Supplier<MenuType<InserterMenu>> INSERTER_MENU = MENU_TYPES.register(

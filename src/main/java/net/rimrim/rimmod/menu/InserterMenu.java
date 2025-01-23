@@ -34,17 +34,12 @@ public class InserterMenu extends AbstractContainerMenu {
 
         this.levelAccess = ContainerLevelAccess.create(blockEntity.getLevel(), blockEntity.getBlockPos());
 
-
-        addInserterGrid();
-        int i = 18;
-        int j = 3 * 18 + this.containerRows * 18 + 12;
-        this.addStandardInventorySlots(playerInventory, 8, j);
+        // Add slots
+        this.addSlot(new SlotItemHandler(this.blockEntity.getItemHandler(), 0, 80, 36));
+        this.addStandardInventorySlots(playerInventory, 8, 84);
     }
 
 
-    private void addInserterGrid() {
-        this.addSlot(new SlotItemHandler(this.blockEntity.getItemHandler(), 0, 80, 35));
-    }
 
     @Override
     public boolean stillValid(Player player) {
