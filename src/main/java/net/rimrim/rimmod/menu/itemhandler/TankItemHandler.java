@@ -5,22 +5,27 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class TankItemHandler extends ItemStackHandler {
-    public TankItemHandler() {
-        super(2);
+    public final int fluidSlot;
+
+    public TankItemHandler(int size) {
+        super(size);
+
+        this.fluidSlot = size - 1;
     }
 
 
     @Override
     public boolean isItemValid(int slot, ItemStack stack) {
-        return switch (slot) {
-            case 0 -> stack.getCapability(Capabilities.FluidHandler.ITEM, null) == null;
-            // Slot 0 for non-fluid item
-            case 1 -> stack.getCapability(Capabilities.FluidHandler.ITEM, null) != null;
-            // Slot 1 for fluid items
-            default -> false;
-        };
-
-
+        return (slot == fluidSlot) == (stack.getCapability(Capabilities.FluidHandler.ITEM, null) != null);
     }
 
+    public void setStackInSlotNoUpdate(int slot, ItemStack stack) {
+        validateSlotIndex(slot);
+        this.stacks.set(slot, stack);
+    }
+
+    @Override
+    protected int getStackLimit(int slot, ItemStack stack) {
+        return 1;
+    }
 }

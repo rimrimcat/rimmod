@@ -32,10 +32,11 @@ import org.jetbrains.annotations.Nullable;
 public class TankBlockEntity extends BlockEntity implements MenuProvider {
     public static final int SIZE = 2;
 
-    private final TankItemHandler itemHandler = new TankItemHandler(){
+    private final TankItemHandler itemHandler = new TankItemHandler(SIZE) {
         @Override
         protected void onContentsChanged(int slot) {
             super.onContentsChanged(slot);
+            process_fluid();
             TankBlockEntity.this.setChanged();
         }
     };
@@ -49,9 +50,9 @@ public class TankBlockEntity extends BlockEntity implements MenuProvider {
         }
     };
 
-
     private static final Component TITLE = Component.translatable("container." + RimMod.MODID + ".tank");
-
+    private boolean fluid_container_processed;
+    private boolean item_processed;
 
     public TankBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.TANK.get(), pos, state);
@@ -63,7 +64,7 @@ public class TankBlockEntity extends BlockEntity implements MenuProvider {
     }
 
 
-    public ItemStackHandler getItemHandler() {
+    public TankItemHandler getItemHandler() {
         return itemHandler;
     }
 
@@ -77,7 +78,7 @@ public class TankBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     public @NotNull ItemStack getFluidItem() {
-        return this.itemHandler.getStackInSlot(1);
+        return this.itemHandler.getStackInSlot(this.itemHandler.fluidSlot);
     }
 
     public FluidTank getFluidTank() {
@@ -96,7 +97,6 @@ public class TankBlockEntity extends BlockEntity implements MenuProvider {
     public Component getDisplayName() {
         return TITLE;
     }
-
 
     // Read values from the passed CompoundTag here.
     @Override
@@ -135,6 +135,50 @@ public class TankBlockEntity extends BlockEntity implements MenuProvider {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
+    private void process_fluid() {
+        if (level == null || level.isClientSide()) return;
+
+        BlockPos blockPos = this.getBlockPos();
+        TankBlockEntity tank = this;
+        if (tank == null) return;
+
+        ItemStack stack = tank.getFluidItem();
+        if (stack.isEmpty()) return;
+
+        if (this.getAvailableFluidCapacity() < 1000) return;
+
+        // Get item's fluid capability
+        IFluidHandlerItem itemFluidHandler = stack.getCapability(Capabilities.FluidHandler.ITEM, null);
+        if (itemFluidHandler == null) return;
+
+        // Check if same fluid or one is empty
+        boolean sameFluidType = this.getFluid().is(itemFluidHandler.getFluidInTank(0).getFluid());
+        boolean oneIsEmpty = this.getFluidTank().isEmpty() || itemFluidHandler.getFluidInTank(0).isEmpty();
+        if (!sameFluidType && !oneIsEmpty) return;
+
+        // Drain item content if possible
+        int availableCapacity = this.getAvailableFluidCapacity();
+        int drainable = itemFluidHandler.drain(availableCapacity, IFluidHandler.FluidAction.SIMULATE).getAmount();
+
+        if (drainable > 0) {
+            this.getFluidTank().fill(itemFluidHandler.drain(drainable, IFluidHandler.FluidAction.EXECUTE), IFluidHandler.FluidAction.EXECUTE);
+
+            if (drainable <= availableCapacity) {
+                this.getItemHandler().setStackInSlotNoUpdate(this.getItemHandler().fluidSlot,
+                        itemFluidHandler.getContainer());
+            }
+
+            this.sendUpdate();
+        }
+
+        // TODO: FILL CONTAINERS WITH LIQUID
+
+    }
+
+    private void process_item() {
+        // TODO: CUSTOM CRAFTING?
+    }
+
     private void sendUpdate() {
         setChanged();
 
@@ -144,37 +188,6 @@ public class TankBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     public static <T extends BlockEntity> void tick(Level level, BlockPos blockPos, BlockState blockState, T t) {
-        if (level == null || level.isClientSide()) return;
-
-        TankBlockEntity tank = (TankBlockEntity) level.getBlockEntity(blockPos);
-        if (tank == null) return;
-
-        ItemStack stack = tank.getFluidItem();
-        if (stack.isEmpty()) return;
-
-        FluidTank fluidTank = tank.getFluidTank();
-        if (tank.getAvailableFluidCapacity() < 1000) return;
-
-        // Get Item capability
-        IFluidHandlerItem itemFluidHandler = stack.getCapability(Capabilities.FluidHandler.ITEM, null);
-        if (itemFluidHandler == null) return;
-
-        // Drain item content if possible
-        int acceptableCapacity = tank.getFluidTank().getCapacity() - tank.getFluidTank().getFluidAmount();
-        int drainable = itemFluidHandler.drain(acceptableCapacity, IFluidHandler.FluidAction.SIMULATE).getAmount();
-
-
-        if (drainable > 0) {
-            tank.getFluidTank().fill(itemFluidHandler.drain(drainable, IFluidHandler.FluidAction.EXECUTE), IFluidHandler.FluidAction.EXECUTE);
-            RimMod.LOGGER.info("Filled fluid tank");
-
-            if (drainable <= acceptableCapacity) {
-                tank.getItemHandler().setStackInSlot(1, itemFluidHandler.getContainer());
-            }
-
-            tank.sendUpdate();
-        }
-
     }
 
     @Override
