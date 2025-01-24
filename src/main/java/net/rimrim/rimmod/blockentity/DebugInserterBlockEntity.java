@@ -41,14 +41,6 @@ public class DebugInserterBlockEntity extends BlockEntity  {
 
     public static final int SIZE = 1;
 
-    public static final int TAKING_MAX_PROGRESS = 20; // Duration in ticks needed
-    public static final int TRANSFER1_MAX_PROGRESS = 40;
-    public static final int TRANSFER2_MAX_PROGRESS = 40;
-    public static final int INSERTING_MAX_PROGRESS = 20;
-    public static final int RETURNING1_MAX_PROGRESS = 40;
-    public static final int RETURNING2_MAX_PROGRESS = 40;
-
-    private int move_speed; // how much progress increments per tick
 
     public static InserterState state;
     private int progress;
@@ -69,7 +61,6 @@ public class DebugInserterBlockEntity extends BlockEntity  {
 
         this.progress = 0;
         this.state = InserterState.WAIT_SOURCE;
-        this.move_speed = 1;
         this.lastUpdateTime = 0;
     }
 

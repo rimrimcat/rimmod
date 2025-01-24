@@ -42,6 +42,14 @@ public class ModBlockEntities {
             )
     );
 
+    public static final Supplier<BlockEntityType<ConductiveBlockEntity>> CONDUCTIVE_BLOCK = BLOCK_ENTITY_TYPES.register(
+            "conductive_block",
+            () -> new BlockEntityType<>(
+                    ConductiveBlockEntity::new,
+                    ModBlocks.CONDUCTIVE_BLOCK.get()
+            )
+    );
+
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITY_TYPES.register(eventBus);
     }

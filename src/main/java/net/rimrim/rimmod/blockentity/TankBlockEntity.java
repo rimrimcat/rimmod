@@ -21,7 +21,6 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
-import net.neoforged.neoforge.items.ItemStackHandler;
 import net.rimrim.rimmod.RimMod;
 import net.rimrim.rimmod.init.ModBlockEntities;
 import net.rimrim.rimmod.menu.TankMenu;
@@ -78,7 +77,7 @@ public class TankBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     public @NotNull ItemStack getFluidItem() {
-        return this.itemHandler.getStackInSlot(this.itemHandler.fluidSlot);
+        return this.itemHandler.getStackInSlot(this.itemHandler.FLUID_SLOT);
     }
 
     public FluidTank getFluidTank() {
@@ -164,7 +163,7 @@ public class TankBlockEntity extends BlockEntity implements MenuProvider {
             this.getFluidTank().fill(itemFluidHandler.drain(drainable, IFluidHandler.FluidAction.EXECUTE), IFluidHandler.FluidAction.EXECUTE);
 
             if (drainable <= availableCapacity) {
-                this.getItemHandler().setStackInSlotNoUpdate(this.getItemHandler().fluidSlot,
+                this.getItemHandler().setStackInSlotNoUpdate(this.getItemHandler().FLUID_SLOT,
                         itemFluidHandler.getContainer());
             }
 

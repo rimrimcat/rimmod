@@ -92,10 +92,13 @@ public class ModBlocks {
                     .setId(ResourceKey.create(Registries.BLOCK, registryName))
             ));
 
+    public static final DeferredBlock<ConductiveBlock> CONDUCTIVE_BLOCK = BLOCKS.register("conductive_block",
+            registryName -> new ConductiveBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)
+                    .setId(ResourceKey.create(Registries.BLOCK, registryName))
+            ));
+
+
     // Helper
-
-
-
 
 
     private static <T extends Block> DeferredBlock<T> registerBlock(String name, Supplier<T> block) {
