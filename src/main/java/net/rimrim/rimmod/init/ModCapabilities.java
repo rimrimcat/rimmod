@@ -9,12 +9,13 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.rimrim.rimmod.RimMod;
 import net.rimrim.rimmod.props.IPhysicalPropertyHandler;
+import net.rimrim.rimmod.props.PhysicalPropertyHandler;
 import org.jetbrains.annotations.Nullable;
 
 @EventBusSubscriber(modid = RimMod.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class ModCapabilities {
 
-    public static final class PhysicalPropertyHandler {
+    public static final class PhysPropHandler {
         public static final BlockCapability<IPhysicalPropertyHandler, @Nullable Direction> BLOCK =
                 BlockCapability.createSided(
                         ResourceLocation.fromNamespaceAndPath(RimMod.MODID, "physprop_handler"),
@@ -40,6 +41,11 @@ public class ModCapabilities {
                 ModBlockEntities.TANK.get(),
                 (be, side) -> be.getFluidTank());
 
+        event.registerBlockEntity(
+                PhysPropHandler.BLOCK,
+                ModBlockEntities.CONDUCTIVE_BLOCK.get(),
+                (be, side) -> be.getPropHandler()
+        );
 
     }
 }

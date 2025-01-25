@@ -1,20 +1,19 @@
 package net.rimrim.rimmod.props;
 
-import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.rimrim.rimmod.props.base.IBasicProperties;
+import net.rimrim.rimmod.props.base.ITempDependentProperties;
 
-public interface IPhysicalPropertyHandler {
+public interface IPhysicalPropertyHandler extends IBasicProperties, ITempDependentProperties {
 
+    // Mechanisms here
+    void updateTemperature(float newTemperature);
 
-    // TODO:
+    void updateConductibles(Level level, BlockPos pos);
 
-    /**
-    * Returns the temperature of the object
-    **/
-    float getTemperature();
+    void conductAll();
 
-    /**
-     * Returns the energy of the object
-     */
-    float getEnergy();
+    void conduct(IPhysicalPropertyHandler otherHandler);
 
 }
