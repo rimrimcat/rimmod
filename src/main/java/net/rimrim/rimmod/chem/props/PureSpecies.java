@@ -1,7 +1,7 @@
 package net.rimrim.rimmod.chem.props;
 
-import net.rimrim.rimmod.chem.correlation.function.base.IFunction;
-import net.rimrim.rimmod.chem.correlation.function.UnsetFunction;
+import net.rimrim.rimmod.chem.correlation.type.base.IFunction;
+import net.rimrim.rimmod.chem.correlation.type.UnsetProperty;
 import net.rimrim.rimmod.chem.enums.VariableType;
 import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.interfaces.IAtom;
@@ -10,7 +10,6 @@ import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesParser;
 
 import java.util.EnumMap;
-import java.util.HashMap;
 
 public class PureSpecies extends PureDependentProperty {
 
@@ -141,24 +140,24 @@ public class PureSpecies extends PureDependentProperty {
         private float critical_molar_volume;
         private float critical_compressibility_factor;
 
-        private IFunction solid_density = new UnsetFunction();
-        private IFunction liquid_density = new UnsetFunction();
-        private IFunction vapor_density = new UnsetFunction();
+        private IFunction solid_density = new UnsetProperty();
+        private IFunction liquid_density = new UnsetProperty();
+        private IFunction vapor_density = new UnsetProperty();
 
-        private IFunction solid_viscosity = new UnsetFunction();
-        private IFunction liquid_viscosity = new UnsetFunction();
-        private IFunction vapor_viscosity = new UnsetFunction();
+        private IFunction solid_viscosity = new UnsetProperty();
+        private IFunction liquid_viscosity = new UnsetProperty();
+        private IFunction vapor_viscosity = new UnsetProperty();
 
-        private IFunction solid_heat_capacity = new UnsetFunction();
-        private IFunction liquid_heat_capacity = new UnsetFunction();
-        private IFunction vapor_heat_capacity = new UnsetFunction();
+        private IFunction solid_heat_capacity = new UnsetProperty();
+        private IFunction liquid_heat_capacity = new UnsetProperty();
+        private IFunction vapor_heat_capacity = new UnsetProperty();
 
-        private IFunction solid_thermal_conductivity = new UnsetFunction();
-        private IFunction liquid_thermal_conductivity = new UnsetFunction();
-        private IFunction vapor_thermal_conductivity = new UnsetFunction();
+        private IFunction solid_thermal_conductivity = new UnsetProperty();
+        private IFunction liquid_thermal_conductivity = new UnsetProperty();
+        private IFunction vapor_thermal_conductivity = new UnsetProperty();
 
-        private IFunction solid_vapor_pressure = new UnsetFunction();
-        private IFunction liquid_vapor_pressure = new UnsetFunction();
+        private IFunction solid_vapor_pressure = new UnsetProperty();
+        private IFunction liquid_vapor_pressure = new UnsetProperty();
 
 
         public Builder fromSmiles(String smiles) {

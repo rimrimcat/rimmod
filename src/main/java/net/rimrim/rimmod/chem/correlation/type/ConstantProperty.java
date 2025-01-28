@@ -1,6 +1,6 @@
-package net.rimrim.rimmod.chem.correlation.function;
+package net.rimrim.rimmod.chem.correlation.type;
 
-import net.rimrim.rimmod.chem.correlation.function.base.IFunction;
+import net.rimrim.rimmod.chem.correlation.type.base.IFunction;
 import net.rimrim.rimmod.chem.enums.VariableType;
 
 import java.util.EnumMap;

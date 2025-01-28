@@ -1,4 +1,4 @@
-package net.rimrim.rimmod.chem.correlation.function.base;
+package net.rimrim.rimmod.chem.correlation.type.base;
 
 import net.rimrim.rimmod.chem.enums.VariableType;
 

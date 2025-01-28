@@ -1,6 +1,6 @@
 package net.rimrim.rimmod.chem.props;
 
-import net.rimrim.rimmod.chem.correlation.function.base.IFunction;
+import net.rimrim.rimmod.chem.correlation.type.base.IFunction;
 import net.rimrim.rimmod.chem.enums.MatterState;
 
 public abstract class PureDependentProperty {
@@ -45,7 +45,7 @@ public abstract class PureDependentProperty {
         return 0;
     }
 
-    // These functions should check for state and use the correct function
+    // These functions should check for state and use the correct type
     public float density(float temperature, float pressure) {
         return 0;
     }

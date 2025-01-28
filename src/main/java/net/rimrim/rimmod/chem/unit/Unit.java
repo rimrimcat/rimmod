@@ -184,7 +184,6 @@ public record Unit(int unit_class, int id, String symbol, Operation ops) impleme
 
     }
 
-
     public static class MASS {
         public static final int uc = 5;
 
