@@ -1,4 +1,7 @@
-package net.rimrim.rimmod.chem.unit;
+package net.rimrim.rimmod.chem.correlation.function.base;
+
+import net.rimrim.rimmod.chem.correlation.function.PropertyFunction;
+import net.rimrim.rimmod.chem.unit.Parameter;
 
 import java.util.List;
 import java.util.function.Function;
@@ -7,7 +10,7 @@ public record BaseFunction(
         int num_constants,
         Parameter[] inputs,
         Parameter output,
-        Function<float[], Float> formula
+        Function<FunctionInput, Float> formula
 ) {
 
 
@@ -45,12 +48,26 @@ public record BaseFunction(
 
     public static class Builder {
         private int num_constants;
-        private Parameter[] inputs;
+        private Parameter[] inputs = null;
         private Parameter output;
-        private Function<float[], Float> formula;
+        private Function<FunctionInput, Float> formula;
 
         public Builder constants(int num_constants) {
             this.num_constants = num_constants;
+            return this;
+        }
+
+        public Builder input(Parameter param) {
+            if (this.inputs == null) {
+                this.inputs = new Parameter[]{param};
+            }
+            else {
+                Parameter[] new_inputs = new Parameter[this.inputs.length + 1];
+                System.arraycopy(this.inputs, 0, new_inputs, 0, this.inputs.length);
+                new_inputs[this.inputs.length] = param;
+
+                this.inputs = new_inputs;
+            }
             return this;
         }
 
@@ -74,7 +91,7 @@ public record BaseFunction(
             return this;
         }
 
-        public Builder formula(Function<float[], Float> formula) {
+        public Builder formula(Function<FunctionInput, Float> formula) {
             this.formula = formula;
             return this;
         }

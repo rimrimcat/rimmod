@@ -1,7 +1,6 @@
 package net.rimrim.rimmod.chem.unit;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 import java.util.function.Function;
 
 public class Operation {
@@ -10,7 +9,6 @@ public class Operation {
     // 1 = multiply
     private final float[] values;
     private int index;
-
 
     public Operation(int num_ops) {
         ops = new int[num_ops];
@@ -22,13 +20,35 @@ public class Operation {
         this(5);
     }
 
+    public Operation(int[] ops, float[] values) {
+        this.ops = ops;
+        this.values = values;
+        this.index = ops.length;
+    }
+
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < index; i++) {
+            switch (ops[i]) {
+                case 0:
+                    sb.append(" + ").append(values[i]);
+                    break;
+                case 1:
+                    sb.append(" * ").append(values[i]);
+                    break;
+            }
+        }
+        return sb.toString();
+    }
+
     public Operation add(float value) {
         ops[index] = 0;
         values[index] = value;
         index += 1;
         return this;
     }
-
 
     public Operation multiply(float value) {
         ops[index] = 1;
@@ -38,6 +58,7 @@ public class Operation {
     }
 
     public Operation invert() {
+        // NOT INPLACE
         int[] invertedOps = new int[ops.length];
         float[] invertedValues = new float[values.length];
 
@@ -49,15 +70,12 @@ public class Operation {
                     break;
                 case 1:
                     invertedOps[ops.length - 1 - i] = 1;
-                    invertedValues[ops.length - 1 - i] = 1 / values[i];
+                    invertedValues[ops.length - 1 - i] = 1f / values[i];
                     break;
             }
         }
 
-        System.arraycopy(invertedOps, 0, ops, 0, ops.length);
-        System.arraycopy(invertedValues, 0, values, 0, values.length);
-
-        return this;
+        return new Operation(invertedOps, invertedValues);
     }
 
     public Function<Float, Float> asFunction() {
@@ -70,23 +88,46 @@ public class Operation {
         };
     }
 
+    public float apply(float x) {
+        return this.asFunction().apply(x);
+    }
 
-//    private final List<Function<Float, Float>> functions = new ArrayList<>();
+    public Operation clone() {
+        Operation clone = new Operation(ops.length);
+        System.arraycopy(ops, 0, clone.ops, 0, ops.length);
+        System.arraycopy(values, 0, clone.values, 0, values.length);
+        clone.index = index;
+        return clone;
+    }
 
-//
-//    public Operation ADD(float value) {
-//        functions.add(x -> x + value);
-//        return this;
-//    }
-//
-//    public Operation MULTIPLY(float value) {
-//        functions.add(x -> x * value);
-//        return this;
-//    }
+    public Operation combine(Operation other) {
+        Operation combined = new Operation(index + other.index);
+        System.arraycopy(ops, 0, combined.ops, 0, index);
+        System.arraycopy(values, 0, combined.values, 0, index);
+        System.arraycopy(other.ops, 0, combined.ops, index, other.index);
+        System.arraycopy(other.values, 0, combined.values, index, other.index);
+        combined.index = index + other.index;
+        return combined;
+    }
 
-//    public Function<Float, Float> asFunction() {
-//        return functions.stream()
-//                .reduce(Function.identity(), Function::andThen);
-//    }
+    public Operation combine(Operation... ops) {
+        int totalLength = index;
+        for (Operation op : ops) {
+            totalLength += op.index;
+        }
+        Operation combined = new Operation(totalLength);
+        int offset = 0;
+        System.arraycopy(this.ops, 0, combined.ops, 0, this.index);
+        System.arraycopy(this.values, 0, combined.values, 0, this.index);
+        offset += this.index;
+        for (Operation op : ops) {
+            System.arraycopy(op.ops, 0, combined.ops, offset, op.index);
+            System.arraycopy(op.values, 0, combined.values, offset, op.index);
+            offset += op.index;
+        }
+        combined.index = totalLength;
+        return combined;
+    }
+
 
 }

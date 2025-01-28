@@ -119,6 +119,13 @@ dependencies {
     // For more info:
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
+
+
+    // Add cdk
+    implementation "org.openscience.cdk:cdk-formula:${cdk_version}"
+    implementation "org.openscience.cdk:cdk-silent:${cdk_version}"
+    implementation "org.openscience.cdk:cdk-smiles:${cdk_version}"
+    implementation "org.openscience.cdk:cdk-smarts:${cdk_version}"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
