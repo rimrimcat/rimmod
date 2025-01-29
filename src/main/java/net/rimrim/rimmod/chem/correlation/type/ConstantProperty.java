@@ -13,6 +13,10 @@ public class ConstantProperty implements IFunction {
         this.value = value;
     }
 
+    public ConstantProperty(double value) {
+        this.value = (float) value;
+    }
+
     public ConstantProperty withReference(String ref) {
         this.source = ref;
         return this;

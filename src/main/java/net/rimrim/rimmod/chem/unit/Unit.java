@@ -198,5 +198,17 @@ public record Unit(int unit_class, int id, String symbol, Operation ops) impleme
         public static final Unit MOLE = new Unit(uc, 0, "mol", new Operation(0));
     }
 
+    public static class ENERGY {
+        public static final int uc = 7;
 
+        public static final Unit JOULE = new Unit(uc, 0, "J", new Operation(0));
+
+    }
+
+    public static class POWER {
+        public static final int uc = 8;
+
+        public static final Unit WATT = new Unit(uc, 0, "W", new Operation(0));
+
+    }
 }

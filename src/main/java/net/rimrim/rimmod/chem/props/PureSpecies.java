@@ -15,10 +15,8 @@ public class PureSpecies extends PureDependentProperty {
 
     // SPECIES IDENTITY
     private final String name;
-    private final IAtomContainer atoms;
+//    private final IAtomContainer atoms;
     private final ChemTags tags;
-    // private Environment environment;
-    private float containerVolume;
 
     // CONSTANT PROPERTIES
     private final float molecular_weight;
@@ -51,9 +49,8 @@ public class PureSpecies extends PureDependentProperty {
     // Process Vars
     private final EnumMap<VariableType, Float> processVars = new EnumMap<>(VariableType.class);
 
-    protected PureSpecies(String name, IAtomContainer atoms, ChemTags tags, float molecularWeight, float accentricFactor, float criticalTemperature, float criticalPressure, float criticalMolarVolume, float criticalCompressibilityFactor, IFunction solidDensity, IFunction liquidDensity, IFunction vaporDensity, IFunction solidViscosity, IFunction liquidViscosity, IFunction vaporViscosity, IFunction solidHeatCapacity, IFunction liquidHeatCapacity, IFunction vaporHeatCapacity, IFunction solidThermalConductivity, IFunction liquidThermalConductivity, IFunction vaporThermalConductivity, IFunction solidVaporPressure, IFunction liquidVaporPressure) {
+    protected PureSpecies(String name, ChemTags tags, float molecularWeight, float accentricFactor, float criticalTemperature, float criticalPressure, float criticalMolarVolume, float criticalCompressibilityFactor, IFunction solidDensity, IFunction liquidDensity, IFunction vaporDensity, IFunction solidViscosity, IFunction liquidViscosity, IFunction vaporViscosity, IFunction solidHeatCapacity, IFunction liquidHeatCapacity, IFunction vaporHeatCapacity, IFunction solidThermalConductivity, IFunction liquidThermalConductivity, IFunction vaporThermalConductivity, IFunction solidVaporPressure, IFunction liquidVaporPressure) {
         this.name = name;
-        this.atoms = atoms;
         this.tags = tags;
         molecular_weight = molecularWeight;
         accentric_factor = accentricFactor;
@@ -198,9 +195,26 @@ public class PureSpecies extends PureDependentProperty {
             return this;
         }
 
+        // CONSTANTS
+        public Builder MW(float molecular_weight) {
+            return this.molecular_weight(molecular_weight);
+        }
+
+        public Builder MW(double molecular_weight) {
+            return this.molecular_weight((float) molecular_weight);
+        }
+
         public Builder molecular_weight(float molecular_weight) {
             this.molecular_weight = molecular_weight;
             return this;
+        }
+
+        public Builder w(float accentric_factor) {
+            return this.accentric_factor(accentric_factor);
+        }
+
+        public Builder w(double accentric_factor) {
+            return this.accentric_factor((float) accentric_factor);
         }
 
         public Builder accentric_factor(float accentric_factor) {
@@ -208,9 +222,25 @@ public class PureSpecies extends PureDependentProperty {
             return this;
         }
 
+        public Builder Tc(float critical_temperature) {
+            return this.critical_temperature(critical_temperature);
+        }
+
+        public Builder Tc(double critical_temperature) {
+            return this.critical_temperature((float) critical_temperature);
+        }
+
         public Builder critical_temperature(float critical_temperature) {
             this.critical_temperature = critical_temperature;
             return this;
+        }
+
+        public Builder Pc(float critical_pressure) {
+            return this.critical_pressure(critical_pressure);
+        }
+
+        public Builder Pc(double critical_pressure) {
+            return this.critical_pressure((float) critical_pressure);
         }
 
         public Builder critical_pressure(float critical_pressure) {
@@ -218,9 +248,25 @@ public class PureSpecies extends PureDependentProperty {
             return this;
         }
 
+        public Builder Vc(float critical_molar_volume) {
+            return this.critical_molar_volume(critical_molar_volume);
+        }
+
+        public Builder Vc(double critical_molar_volume) {
+            return this.critical_molar_volume((float) critical_molar_volume);
+        }
+
         public Builder critical_molar_volume(float critical_molar_volume) {
             this.critical_molar_volume = critical_molar_volume;
             return this;
+        }
+
+        public Builder Zc(float critical_compressibility_factor) {
+            return this.critical_compressibility_factor(critical_compressibility_factor);
+        }
+
+        public Builder Zc(double critical_compressibility_factor) {
+            return this.critical_compressibility_factor((float) critical_compressibility_factor);
         }
 
         public Builder critical_compressibility_factor(float critical_compressibility_factor) {
@@ -301,7 +347,6 @@ public class PureSpecies extends PureDependentProperty {
         public PureSpecies build() {
             return new PureSpecies(
                     name,
-                    atoms,
                     tags,
                     molecular_weight,
                     accentric_factor,

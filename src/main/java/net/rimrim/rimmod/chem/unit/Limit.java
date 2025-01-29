@@ -9,13 +9,25 @@ public class Limit {
         return new Limit(Type.GREATER_THAN, value1);
     }
 
+    public static Limit GREATER_THAN(double value1) {
+        return new Limit(Type.GREATER_THAN,(float) value1);
+    }
+
+
     public static Limit LESS_THAN(float value1) {
         return new Limit(Type.LESS_THAN, value1);
+    }
+    public static Limit LESS_THAN(double value1) {
+        return new Limit(Type.LESS_THAN, (float) value1);
     }
 
 
     public static Limit WITHIN(float value1, float value2) {
         return new Limit(Type.WITHIN, value1, value2);
+    }
+
+    public static Limit WITHIN(double value1, double value2) {
+        return new Limit(Type.WITHIN, (float) value1, (float) value2);
     }
 
     private final Type type;
@@ -33,10 +45,6 @@ public class Limit {
         this.value1 = value1;
         this.value2 = 0;
     }
-
-
-
-
 
 
     private boolean checkLimit(float otherValue) {
@@ -58,7 +66,8 @@ public class Limit {
                 case LESS_THAN -> msg += "less than " + this.value1;
                 case WITHIN -> msg += "within [" + this.value1 + ", " + this.value2 + "]";
             }
-            RimMod.LOGGER.error("Value outside limit! " + msg);
+//            RimMod.LOGGER.error("Value outside limit! " + msg);
+            System.out.println("Value outside limit! " + msg);
         }
     }
 
