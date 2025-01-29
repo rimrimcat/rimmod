@@ -195,7 +195,8 @@ public record Unit(int unit_class, int id, String symbol, Operation ops) impleme
     public static class MOLE {
         public static final int uc = 6;
 
-        public static final Unit MOLE = new Unit(uc, 0, "mol", new Operation(0));
+        public static final Unit KILOMOLE = new Unit(uc, 0, "Kmol", new Operation(0));
+        public static final Unit MOLE = new Unit(uc, 100, "mol", new Operation(1).multiply(0.001f));
     }
 
     public static class ENERGY {
@@ -211,4 +212,11 @@ public record Unit(int unit_class, int id, String symbol, Operation ops) impleme
         public static final Unit WATT = new Unit(uc, 0, "W", new Operation(0));
 
     }
+
+    public static class VOLUME {
+        public static final int uc = 9;
+
+        public static final Unit CUBIC_METER = new Unit(uc, 0, "m3", new Operation(0));
+    }
+
 }

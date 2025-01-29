@@ -51,10 +51,10 @@ public class Forms {
     τ = 1 - Tr
     Pr(Tr) = exp[ (1/Tr)*( a1(τ) + a2(τ)^1.5 + a3(τ)^3 + a4(τ)^3.5 + a5(τ)^4 + a6(τ)^7.5)  ]
      */
-    public static BaseForm IAPS_PSAT = new BaseForm(
-
-
-    );
+//    public static BaseForm IAPS_PSAT = new BaseForm(
+//
+//
+//    );
 
 
 }

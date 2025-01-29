@@ -7,7 +7,10 @@ import net.rimrim.rimmod.chem.unit.Unit;
 public enum VariableType {
     MOLECULAR_WEIGHT(0, CompositeUnit.G_PER_MOLE),
     HEAT_CAPACITY(1, CompositeUnit.J_PER_KG_K),
-    THERMAL_CONDUCTIVITY(1, CompositeUnit.W_PER_M_K),
+    THERMAL_CONDUCTIVITY(2, CompositeUnit.W_PER_M_K),
+    MASS(3, Unit.MASS.KILOGRAM),
+    MOLE(4, Unit.MOLE.KILOMOLE),
+    VOLUME(5, Unit.VOLUME.CUBIC_METER),
 
 
     TEMPERATURE(1000, Unit.TEMPERATURE.K),

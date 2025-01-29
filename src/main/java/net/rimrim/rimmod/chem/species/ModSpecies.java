@@ -7,6 +7,8 @@ import net.rimrim.rimmod.chem.props.PureSpecies;
 
 public class ModSpecies {
 
+    public static PureSpecies NONE = new PureSpecies.Builder().build();
+
     public static PureSpecies WATER = new PureSpecies.Builder()
             .name("water")
             .tags(ChemTags.WATER)

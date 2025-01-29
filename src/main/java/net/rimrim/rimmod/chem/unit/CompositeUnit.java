@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 public class CompositeUnit implements IUnit {
     // COMMON UNITS
-    public static final CompositeUnit G_PER_MOLE = Unit.MASS.GRAM.per(Unit.MOLE.MOLE);
+    public static final CompositeUnit G_PER_MOLE = Unit.MASS.GRAM.per(Unit.MOLE.KILOMOLE);
     public static final CompositeUnit J_PER_KG_K = Unit.ENERGY.JOULE.per(Unit.MASS.KILOGRAM).per(Unit.TEMPERATURE.K);
     public static final CompositeUnit W_PER_M_K = Unit.POWER.WATT.per(Unit.DISTANCE.METER).per(Unit.TEMPERATURE.K);
 

@@ -46,8 +46,6 @@ public class PureSpecies extends PureDependentProperty {
     private final IFunction solid_vapor_pressure;
     private final IFunction liquid_vapor_pressure;
 
-    // Process Vars
-    private final EnumMap<VariableType, Float> processVars = new EnumMap<>(VariableType.class);
 
     protected PureSpecies(String name, ChemTags tags, float molecularWeight, float accentricFactor, float criticalTemperature, float criticalPressure, float criticalMolarVolume, float criticalCompressibilityFactor, IFunction solidDensity, IFunction liquidDensity, IFunction vaporDensity, IFunction solidViscosity, IFunction liquidViscosity, IFunction vaporViscosity, IFunction solidHeatCapacity, IFunction liquidHeatCapacity, IFunction vaporHeatCapacity, IFunction solidThermalConductivity, IFunction liquidThermalConductivity, IFunction vaporThermalConductivity, IFunction solidVaporPressure, IFunction liquidVaporPressure) {
         this.name = name;
