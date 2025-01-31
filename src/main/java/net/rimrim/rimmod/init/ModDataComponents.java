@@ -31,4 +31,6 @@ public class ModDataComponents {
         DATA_COMPONENT_TYPES.register(eventBus);
     }
 
+    // TODO: CLEAN THIS UP, UNUSED
+
 }

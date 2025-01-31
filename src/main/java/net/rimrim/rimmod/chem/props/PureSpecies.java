@@ -2,29 +2,21 @@ package net.rimrim.rimmod.chem.props;
 
 import net.rimrim.rimmod.chem.correlation.type.base.IFunction;
 import net.rimrim.rimmod.chem.correlation.type.UnsetProperty;
-import net.rimrim.rimmod.chem.enums.VariableType;
-import org.openscience.cdk.exception.InvalidSmilesException;
-import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.silent.SilentChemObjectBuilder;
-import org.openscience.cdk.smiles.SmilesParser;
+import org.openbabel.OBConversion;
 
-import java.util.EnumMap;
 
 public class PureSpecies extends PureDependentProperty {
-
     // SPECIES IDENTITY
-    private final String name;
-//    private final IAtomContainer atoms;
-    private final ChemTags tags;
+    public final String name;
+    public final ChemTags tags;
 
     // CONSTANT PROPERTIES
-    private final float molecular_weight;
-    private final float accentric_factor;
-    private final float critical_temperature;
-    private final float critical_pressure;
-    private final float critical_molar_volume;
-    private final float critical_compressibility_factor;
+    public final float molecular_weight;
+    public final float accentric_factor;
+    public final float critical_temperature;
+    public final float critical_pressure;
+    public final float critical_molar_volume;
+    public final float critical_compressibility_factor;
 
     // FUNCTIONS
     private final IFunction solid_density;
@@ -125,7 +117,7 @@ public class PureSpecies extends PureDependentProperty {
     // Builder
     public static class Builder {
         private String name = "";
-        private IAtomContainer atoms;
+        private String atoms;
         private ChemTags tags = new ChemTags.Builder().build();
 
         private float molecular_weight;
@@ -156,28 +148,27 @@ public class PureSpecies extends PureDependentProperty {
 
 
         public Builder fromSmiles(String smiles) {
-            SmilesParser parser = new SmilesParser(SilentChemObjectBuilder.getInstance());
 
-            IAtomContainer atoms = null;
-            try {
-                atoms = parser.parseSmiles(smiles);
-            } catch (InvalidSmilesException e) {
-                throw new RuntimeException(e);
-            }
+            // OBABEL STUFF, UNCOMMENT AND IT WOULD STOP WORKINGGGGG
+//            System.loadLibrary("openbabel_java");
+//            OBConversion conv = new OBConversion();
+//            OBMol mol = new OBMol();
+//            conv.SetInFormat("smi");
+//            conv.ReadString(mol, smiles);
+//            System.out.println("The molecular weight is "
+//                    + mol.GetMolWt());
 
-            return this.atoms(atoms);
-        }
-
-        public Builder atoms(IAtomContainer atoms) {
-            this.atoms = atoms;
-
-            // Get MW from atoms
-            double totalMass = 0.0;
-            for (IAtom atom : this.atoms.atoms()) {
-                totalMass += atom.getExactMass(); // assuming getExactMass() returns the atomic mass
-            }
-            this.molecular_weight = (float) totalMass;
-
+            // cdk
+            //            SmilesParser parser = new SmilesParser(SilentChemObjectBuilder.getInstance());
+            //
+            //            IAtomContainer atoms = null;
+            //            try {
+            //                atoms = parser.parseSmiles(smiles);
+            //            } catch (InvalidSmilesException e) {
+            //                throw new RuntimeException(e);
+            //            }
+            //
+            //            return this.atoms(atoms);
             return this;
         }
 
@@ -343,6 +334,8 @@ public class PureSpecies extends PureDependentProperty {
         }
 
         public PureSpecies build() {
+
+
             return new PureSpecies(
                     name,
                     tags,

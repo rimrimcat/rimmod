@@ -21,6 +21,15 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
+
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(RimMod.MODID)
 public class RimMod {
@@ -32,8 +41,6 @@ public class RimMod {
     // The constructor for the mod class is the first code that is run when your mod is loaded.
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
     public RimMod(IEventBus modEventBus, ModContainer modContainer) {
-
-
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
 

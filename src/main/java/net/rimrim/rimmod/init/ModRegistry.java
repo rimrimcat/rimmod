@@ -20,5 +20,7 @@ public class ModRegistry {
         ModMenus.register(eventBus);
 
         ModTabs.register(eventBus);
+
+        ModChemicals.register(eventBus);
     }
 }

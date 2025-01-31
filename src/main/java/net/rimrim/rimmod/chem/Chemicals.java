@@ -1,13 +1,16 @@
-package net.rimrim.rimmod.chem.species;
+package net.rimrim.rimmod.chem;
 
 import net.rimrim.rimmod.chem.correlation.Correlations;
 import net.rimrim.rimmod.chem.correlation.type.ConstantProperty;
 import net.rimrim.rimmod.chem.props.ChemTags;
 import net.rimrim.rimmod.chem.props.PureSpecies;
 
-public class ModSpecies {
+import java.util.HashMap;
 
-    public static PureSpecies NONE = new PureSpecies.Builder().build();
+public class Chemicals {
+    public static PureSpecies NONE = new PureSpecies.Builder()
+            .name("none")
+            .build();
 
     public static PureSpecies WATER = new PureSpecies.Builder()
             .name("water")
